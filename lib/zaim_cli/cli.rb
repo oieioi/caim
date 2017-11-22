@@ -1,29 +1,42 @@
 require 'thor'
 require 'yaml'
 require 'json'
-require 'oauth'
 require 'byebug'
+require 'active_support'
+require 'active_support/core_ext'
+require 'terminal-table'
 
 module ZaimCli
   class CLI < Thor
 
     desc "list", "list zaim"
     def list
-      tokens = YAML.load(File.open('config.yml'))
-      consumer = OAuth.consumer
-      endpoint = ::OAuth::AccessToken.new(consumer, tokens[:token], tokens[:secret])
-      r = endpoint.get('https://api.zaim.net/v2/home/money?start_date=2017-11-01&end_date=2017-11-30&page=1&limit=10')
-      list = JSON.parse(r.body)
-      list["money"].each {|m|
-        puts [
+
+      categories = Models::Category.new
+      genres = Models::Genre.new
+      accounts = Models::Account.new
+      moneys = Models::Money.new
+
+      rows = moneys.map {|m|
+        [
           m["id"],
           m["date"],
           m["amount"],
-          m["category_id"],
-          m["genre_id"],
-          m["name"]
-        ].join(',')
+          accounts[m["from_account_id"]].try(:[], "name"),
+          accounts[m["to_account_id"]].try(:[], "name"),
+          categories[m["category_id"]].try(:[], "name"),
+          genres[m["genre_id"]].try(:[], "name"),
+          m["comment"],
+          m["place"],
+        ]
       }
+      table = ::Terminal::Table.new({
+          headings: %w{
+            id 日付 代金 出金口座 入金口座 品目 細品目 メモ お店
+          },
+          rows: rows
+      })
+      puts table
 
     end
 
@@ -31,5 +44,6 @@ module ZaimCli
     def login
       OAuth.get_access_token
     end
+
   end
 end

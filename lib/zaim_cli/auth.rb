@@ -12,7 +12,6 @@ module ZaimCli
       ::OAuth::Consumer.new(
         KEY,
         SECRET,
-        debug_output: true,
         request_token_path: "https://api.zaim.net/v2/auth/request",
         access_token_path: "https://api.zaim.net/v2/auth/access",
         authorize_path: "https://auth.zaim.net/users/auth"
