@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+require 'zaim_cli'
+
+ZaimCli::CLI.start
