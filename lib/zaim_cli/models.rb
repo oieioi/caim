@@ -50,8 +50,10 @@ module ZaimCli
     end
 
     class Money < Model
-      def initialize
-        @api = API.new "/v2/home/money?start_date=2017-11-01&end_date=2017-11-30&page=1&limit=10", :get
+      def initialize time
+        url = "/v2/home/money?start_date=#{time.beginning_of_month.strftime("%Y-%m-%d")}&end_date=#{time.end_of_month.strftime("%Y-%m-%d")}"
+        puts url
+        @api = API.new url, :get
         @list = @api.request["money"]
       end
 

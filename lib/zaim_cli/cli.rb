@@ -10,12 +10,13 @@ module ZaimCli
   class CLI < Thor
 
     desc "list", "list zaim"
-    def list
+    def list month = Time.current.strftime("%Y-%m-%d")
 
       categories = Models::Category.new
       genres = Models::Genre.new
       accounts = Models::Account.new
-      moneys = Models::Money.new
+      month = Time.strptime("#{month}-01", "%Y-%m-%d") rescue Time.current
+      moneys = Models::Money.new month
 
       rows = moneys.map {|m|
         [
