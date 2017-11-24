@@ -1,10 +1,9 @@
 require 'oauth'
-require 'yaml'
 
 module ZaimCli
   class API
     def initialize endpoint_path, method
-      @tokens = YAML.load(File.open('config.yml'))
+      @tokens = Cache.get(:auth)
       @consumer = OAuth.consumer
       @endpoint = ::OAuth::AccessToken.new(@consumer, @tokens[:token], @tokens[:secret])
       @endpoint_path = endpoint_path

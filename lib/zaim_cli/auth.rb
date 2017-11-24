@@ -1,5 +1,4 @@
 require 'oauth'
-require 'yaml'
 
 module ZaimCli
   module OAuth
@@ -34,10 +33,10 @@ module ZaimCli
 
       access_token = request_token.get_access_token(:oauth_verifier => token)
 
-      YAML.dump({
+      Cache.save auth: {
         token: access_token.token,
         secret: access_token.secret
-      }, File.open('config.yml', 'w'))
+      }
 
       puts 'authed!'
     end
