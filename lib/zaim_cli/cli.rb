@@ -53,7 +53,16 @@ module ZaimCli
     option :comment,  aliases: :x, required: false
     option :place,    aliases: :p, required: false
     def pay amount
-      p options[:category]
+      item = Models::Money.new({
+        amount: amount,
+        category: options[:catedory],
+        genre: options[:genre] ,
+        account: options[:account] ,
+        date: options[:date] ,
+        comment: options[:comment] ,
+        place: options[:place] ,
+      })
+      item.save
     end
 
     desc 'category', 'show categories'
@@ -80,7 +89,7 @@ module ZaimCli
         puts categories[category_id]["name"]
         padding = " " * 4
         g_genres.each {|g|
-          puts "#{padding}#{g["name"]}"
+          puts "#{padding}#{g["name"]}, #{g["id"]}"
         }
       }
     end

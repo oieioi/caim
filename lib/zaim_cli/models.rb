@@ -25,8 +25,7 @@ module ZaimCli
           return @@list
         end
 
-        api = API.new "/v2/home/#{key}", :get
-        result =  api.request
+        result = API.get "/v2/home/#{key}"
         obj = {}
         obj[keys.to_sym] = result[keys]
         Cache.save obj
@@ -69,10 +68,31 @@ module ZaimCli
     end
 
     class Money < Model
+      attr_accessor :amount, :category, :genre, :date, :account, :comment, :place
       def self.where time:
         url = "/v2/home/money?start_date=#{time.beginning_of_month.strftime("%Y-%m-%d")}&end_date=#{time.end_of_month.strftime("%Y-%m-%d")}"
-        api = API.new url, :get
-        @@list = Collection.new api.request["money"]
+        result = API.get url
+        @@list = Collection.new result["money"]
+      end
+      def initialize options
+        @amount = options[:amount]
+        @category = options[:catedory]
+        @genre = options[:genre]
+        @account = options[:account]
+        @date = options[:date]
+        @comment = options[:comment]
+        @place = options[:place]
+      end
+      def save
+        API.post "/v2/home/money/payment", {
+          amount: @amount,
+          category: @category,
+          genre: @genre,
+          account: @account,
+          date: @date,
+          comment: @comment,
+          place: @place,
+        }
       end
 
     end
