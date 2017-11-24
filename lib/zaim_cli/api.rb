@@ -15,6 +15,9 @@ module ZaimCli
     private
     def self.endpoint
       tokens = Cache.get(:auth)
+      if tokens.nil?
+        raise 'please login!'
+      end
       consumer = OAuth.consumer
       ::OAuth::AccessToken.new(consumer, tokens[:token], tokens[:secret])
     end
