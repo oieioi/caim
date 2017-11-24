@@ -15,12 +15,11 @@ module ZaimCli
 
       private
       def self.all_with_key key, opt
-        force = opt[:force]
         key = key.to_s
         keys = key.pluralize
         cache = Cache.get(keys.to_sym)
 
-        if not force && cache.present?
+        if cache.present?
           @@list = Collection.new cache
           return @@list
         end
@@ -85,11 +84,12 @@ module ZaimCli
       end
       def save
         API.post "/v2/home/money/payment", {
-          amount: @amount,
-          category: @category,
-          genre: @genre,
-          account: @account,
-          date: @date,
+          mapping: 1,
+          category_id: @category.to_i,
+          genre_id: @genre.to_i,
+          amount: @amount.to_i,
+          date: @date || Time.new.strftime('%Y-%m-%d'),
+          from_account_id: @account.to_i,
           comment: @comment,
           place: @place,
         }

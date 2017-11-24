@@ -84,7 +84,6 @@ module ZaimCli
       categories = Models::Category.all
       genres = Models::Genre.all
       grouped = genres.group_by {|c| c["category_id"]}
-      p grouped.size
       grouped.each {|category_id, g_genres|
         puts categories[category_id]["name"]
         padding = " " * 4

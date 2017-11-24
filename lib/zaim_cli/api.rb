@@ -8,7 +8,10 @@ module ZaimCli
     end
 
     def self.post endpoint_path, body
-      result = endpoint.post "https://api.zaim.net#{endpoint_path}", body
+      result = endpoint.post "https://api.zaim.net#{endpoint_path}", body, {
+        'Accept'=>'application/json',
+        'Content-Type' => 'application/json'
+      }
       JSON.parse(result.body)
     end
 
