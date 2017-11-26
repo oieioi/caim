@@ -53,12 +53,18 @@ module ZaimCli
     option :comment,  aliases: :x, required: false
     option :place,    aliases: :p, required: false
     def pay amount
+      genres = Models::Genre.all.select{|g| g["id"].to_i == options[:genre].to_i}
+      if genres.size != 1
+        raise 'invalid genre id'
+      end
+      genre = genres[0]
+
       item = Models::Money.new({
         amount: amount,
-        category: options[:catedory],
-        genre: options[:genre] ,
+        category: genre['category_id'],
+        genre: genre['id'],
         account: options[:account] ,
-        date: options[:date] ,
+        date: options[:date] || Time.new.strftime('%Y-%m-%d'),
         comment: options[:comment] ,
         place: options[:place] ,
       })

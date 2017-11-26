@@ -74,10 +74,10 @@ module ZaimCli
         @@list = Collection.new result["money"]
       end
       def initialize options
-        @amount = options[:amount]
-        @category = options[:catedory]
-        @genre = options[:genre]
-        @account = options[:account]
+        @amount = options[:amount].to_i
+        @category = options[:category].to_i
+        @genre = options[:genre].to_i
+        @account = options[:account].to_i
         @date = options[:date]
         @comment = options[:comment]
         @place = options[:place]
@@ -85,11 +85,11 @@ module ZaimCli
       def save
         API.post "/v2/home/money/payment", {
           mapping: 1,
-          category_id: @category.to_i,
-          genre_id: @genre.to_i,
-          amount: @amount.to_i,
-          date: @date || Time.new.strftime('%Y-%m-%d'),
-          from_account_id: @account.to_i,
+          category_id: @category,
+          genre_id: @genre,
+          amount: @amount,
+          date: @date,
+          from_account_id: @account,
           comment: @comment,
           place: @place,
         }
