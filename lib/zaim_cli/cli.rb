@@ -23,23 +23,22 @@ module ZaimCli
       month = Time.strptime("#{month}-01", "%Y-%m-%d") rescue Time.current
       moneys = Models::Money.where time: month
 
-      rows = moneys.map {|m|
+      rows = moneys.map {|money|
         [
-          m["id"],
-          m["date"],
-          m["amount"],
-          accounts[m["from_account_id"]].try(:[], "name"),
-          accounts[m["to_account_id"]].try(:[], "name"),
-          categories[m["category_id"]].try(:[], "name"),
-          genres[m["genre_id"]].try(:[], "name"),
-          m["comment"],
-          m["name"],
-          m["place"],
+          money["id"],
+          money["date"],
+          money["amount"],
+          accounts[money["from_account_id"]].try(:[], "name"),
+          accounts[money["to_account_id"]].try(:[], "name"),
+          categories[money["category_id"]].try(:[], "name"),
+          genres[money["genre_id"]].try(:[], "name"),
+          money["comment"],
+          money["place"],
         ]
       }
       table = ::Terminal::Table.new({
         headings: %w{
-            id 日付 代金 金額 入金 カテゴリ 細カテゴリ メモ 商品名 お店
+            id 日付 代金 金額 入金 カテゴリ 細カテゴリ メモ お店
         },
           rows: rows
       })

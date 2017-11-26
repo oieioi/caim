@@ -19,16 +19,16 @@ module ZaimCli
         keys = key.pluralize
         cache = Cache.get(keys.to_sym)
 
-        if cache.present?
-          @@list = Collection.new cache
-          return @@list
+        if cache.blank?
+          result = API.get "/v2/home/#{key}"
+          obj = {}
+          obj[keys.to_sym] = result[keys]
+          Cache.save obj
+          cache = Cache.get(keys.to_sym)
         end
 
-        result = API.get "/v2/home/#{key}"
-        obj = {}
-        obj[keys.to_sym] = result[keys]
-        Cache.save obj
-        @@list = Collection.new result
+        @@list = Collection.new cache
+        return @@list
       end
     end
 

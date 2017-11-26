@@ -5,10 +5,10 @@ module ZaimCli
       if not File.exist? FILE_NAME
         File.open(FILE_NAME, 'w').close
       end
-      y = YAML.load(File.open(FILE_NAME))
-      return y if key.nil?
-      y[key]
-
+      yaml = YAML.load(File.open(FILE_NAME))
+      return nil  if yaml == false
+      return yaml if key.nil?
+      yaml[key]
     end
 
     def self.save save_item
