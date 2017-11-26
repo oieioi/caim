@@ -23,6 +23,13 @@ Get list
     2017-11-01 195 交通費 バス
     ...
 
+
+Pay payment
+
+    $ zaim_cli pay 150 --genre genre_id --account 財布 --date 2017-11-23 --comment コカコーラ --place セブンイレブン一番町店
+    $ zaim_cli pay 150 -g genre_id
+
+
 ## TODO
 
 
@@ -32,11 +39,6 @@ cache categories, genres and accounts
     $ zaim_cli category show
 
     id name ...
-
-payment
-
-    $ zaim_cli pay 150 --category 食費 --genre 飲物 --account 財布 --date 2017-11-23 --comment コカコーラ --place セブンイレブン一番町店
-    $ zaim_cli pay 150 -c 食費 -g 飲物
 
 income
 
