@@ -33,12 +33,13 @@ module ZaimCli
           categories[m["category_id"]].try(:[], "name"),
           genres[m["genre_id"]].try(:[], "name"),
           m["comment"],
+          m["name"],
           m["place"],
         ]
       }
       table = ::Terminal::Table.new({
         headings: %w{
-            id 日付 代金 出金口座 入金口座 品目 細品目 メモ お店
+            id 日付 代金 金額 入金 カテゴリ 細カテゴリ メモ 商品名 お店
         },
           rows: rows
       })
@@ -46,11 +47,11 @@ module ZaimCli
     end
 
     desc 'pay', 'add payment'
-    option :category, aliases: :c, required: true
     option :genre,    aliases: :g, required: true
     option :account,  aliases: :a, required: false
     option :date,     aliases: :d, required: false
-    option :comment,  aliases: :x, required: false
+    option :comment,  aliases: :c, required: false
+    option :name,     aliases: :n, required: false
     option :place,    aliases: :p, required: false
     def pay amount
       genres = Models::Genre.all.select{|g| g["id"].to_i == options[:genre].to_i}
@@ -60,13 +61,14 @@ module ZaimCli
       genre = genres[0]
 
       item = Models::Money.new({
-        amount: amount,
+        amount:   amount,
         category: genre['category_id'],
-        genre: genre['id'],
-        account: options[:account] ,
-        date: options[:date] || Time.new.strftime('%Y-%m-%d'),
-        comment: options[:comment] ,
-        place: options[:place] ,
+        genre:    genre['id'],
+        account:  options[:account] ,
+        date:     options[:date] || Time.new.strftime('%Y-%m-%d'),
+        comment:  options[:comment] ,
+        name:     options[:name] ,
+        place:    options[:place] ,
       })
       item.save
     end

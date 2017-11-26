@@ -67,22 +67,26 @@ module ZaimCli
     end
 
     class Money < Model
-      attr_accessor :amount, :category, :genre, :date, :account, :comment, :place
+      attr_accessor :amount, :category, :genre, :date, :account, :comment, :place, :name
       def self.where time:
         url = "/v2/home/money?start_date=#{time.beginning_of_month.strftime("%Y-%m-%d")}&end_date=#{time.end_of_month.strftime("%Y-%m-%d")}"
         result = API.get url
         @@list = Collection.new result["money"]
       end
+
       def initialize options
-        @amount = options[:amount].to_i
+        @amount   = options[:amount].to_i
         @category = options[:category].to_i
-        @genre = options[:genre].to_i
-        @account = options[:account].to_i
-        @date = options[:date]
-        @comment = options[:comment]
-        @place = options[:place]
+        @genre    = options[:genre].to_i
+        @account  = options[:account].to_i
+        @date     = options[:date]
+        @comment  = options[:comment]
+        @name     = options[:name]
+        @place    = options[:place]
       end
+
       def save
+        p @comment
         API.post "/v2/home/money/payment", {
           mapping: 1,
           category_id: @category,
@@ -91,6 +95,7 @@ module ZaimCli
           date: @date,
           from_account_id: @account,
           comment: @comment,
+          name: @name,
           place: @place,
         }
       end
