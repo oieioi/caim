@@ -1,0 +1,3 @@
+a = {"id"=>2072309614, "user_id"=>82640, "date"=>"2017-11-27", "mode"=>"payment", "category_id"=>1508185, "genre_id"=>2281385, "from_account_id"=>359091, "to_account_id"=>0, "amount"=>60, "comment"=>"コーヒー", "active"=>1, "created"=>"2017-11-27 10:24:46", "currency_code"=>"JPY", "name"=>"", "receipt_id"=>0, "place_uid"=>"zm-df631ea834b4f4a9", "place"=>"ハンズシェア"}
+b = {"id"=>2072309614, "user_id"=>82640, "date"=>"2017-11-27", "mode"=>"payment", "category_id"=>1508185, "genre_id"=>2281385, "from_account_id"=>359091, "to_account_id"=>0, "amount"=>60, "comment"=>"コーヒー", "active"=>1, "created"=>"2017-11-27 10:24:46", "currency_code"=>"JPY", "name"=>"", "receipt_id"=>0, "place_uid"=>"zm-df631ea834b4f4a9", "place"=>"ハンズシェア"}
+p a == b

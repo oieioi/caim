@@ -13,6 +13,11 @@ module ZaimCli
         @@list.find {|item| item["id"] == id }
       end
 
+      def each
+        keys = instance_variables
+
+      end
+
       private
       def self.all_with_key key, opt
         key = key.to_s
@@ -67,27 +72,28 @@ module ZaimCli
     end
 
     class Money < Model
-      attr_accessor :amount, :category, :genre, :date, :account, :comment, :place, :name
+      attr_accessor :id, :amount, :category, :genre, :date, :account, :comment, :place, :name
       def self.where time:
         url = "/v2/home/money?start_date=#{time.beginning_of_month.strftime("%Y-%m-%d")}&end_date=#{time.end_of_month.strftime("%Y-%m-%d")}"
         result = API.get url
         @@list = Collection.new result["money"]
       end
 
-      def initialize options
-        @amount   = options[:amount].to_i
-        @category = options[:category].to_i
-        @genre    = options[:genre].to_i
-        @account  = options[:account].to_i
-        @date     = options[:date]
-        @comment  = options[:comment]
-        @name     = options[:name]
-        @place    = options[:place]
+      def initialize id:, amount:, category:, genre:, date:, account:, comment:, place:, name:
+        @id       = id.to_i
+        @amount   = amount.to_i
+        @category = category.to_i
+        @genre    = genre.to_i
+        @account  = account.to_i
+        @date     = date
+        @comment  = comment
+        @name     = name
+        @place    = place
       end
 
       def save
-        p @comment
-        API.post "/v2/home/money/payment", {
+        path = @id.nil? ? "/v2/home/money/payment" : "/v2/home/money/payment/#{@id.to_s}"
+        result = API.post path, {
           mapping: 1,
           category_id: @category,
           genre_id: @genre,
@@ -98,6 +104,9 @@ module ZaimCli
           name: @name,
           place: @place,
         }
+        if result["money"]
+          @id = result["money"]["id"]
+        end
       end
 
     end

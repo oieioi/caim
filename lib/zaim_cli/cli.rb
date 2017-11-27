@@ -23,7 +23,7 @@ module ZaimCli
       month = Time.strptime("#{month}-01", "%Y-%m-%d") rescue Time.current
       moneys = Models::Money.where time: month
 
-      rows = moneys.map {|money|
+      rows = moneys.reverse_each.map {|money|
         [
           money["id"],
           money["date"],
@@ -52,6 +52,7 @@ module ZaimCli
     option :comment,  aliases: :c, required: false
     option :name,     aliases: :n, required: false
     option :place,    aliases: :p, required: false
+    option :id,       aliases: :i, required: false
     def pay amount
       genres = Models::Genre.all.select{|g| g["id"].to_i == options[:genre].to_i}
       if genres.size != 1
@@ -60,6 +61,7 @@ module ZaimCli
       genre = genres[0]
 
       item = Models::Money.new({
+        id:       options[:id],
         amount:   amount,
         category: genre['category_id'],
         genre:    genre['id'],
@@ -92,7 +94,7 @@ module ZaimCli
       genres = Models::Genre.all
       grouped = genres.group_by {|c| c["category_id"]}
       grouped.each {|category_id, g_genres|
-        puts categories[category_id]["name"]
+        puts "#{categories[category_id]["name"]} #{categories[category_id]["id"]}"
         padding = " " * 4
         g_genres.each {|g|
           puts "#{padding}#{g["name"]}, #{g["id"]}"
