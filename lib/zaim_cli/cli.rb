@@ -54,16 +54,22 @@ module ZaimCli
     option :place,    aliases: :p, required: false
     option :id,       aliases: :i, required: false
     def pay amount
-      genres = Models::Genre.all.select{|g| g["id"].to_i == options[:genre].to_i}
-      if genres.size != 1
-        raise 'invalid genre id'
+      genre = Models::Genre.all[options[:genre].to_i]
+      if genre.nil?
+        warn 'genre not found'
+        return
       end
-      genre = genres[0]
+
+      category = Models::Category.all[genre["category_id"]]
+      if category.nil?
+        warn 'category not found'
+        return
+      end
 
       item = Models::Money.new({
-        id:       options[:id],
+        id:       options[:id] || nil,
         amount:   amount,
-        category: genre['category_id'],
+        category: category["local_id"],
         genre:    genre['id'],
         account:  options[:account] ,
         date:     options[:date] || Time.new.strftime('%Y-%m-%d'),
@@ -71,7 +77,21 @@ module ZaimCli
         name:     options[:name] ,
         place:    options[:place] ,
       })
-      item.save
+      puts item.save rescue warn "失敗した"
+    end
+
+    desc 'update', 'update payment/income/exchange'
+    option :genre,    aliases: :g, required: false
+    option :account,  aliases: :a, required: false
+    option :date,     aliases: :d, required: false
+    option :comment,  aliases: :c, required: false
+    option :name,     aliases: :n, required: false
+    option :place,    aliases: :p, required: false
+    def update id
+      item = Models::Money.new(id: id)
+      raise 'Error' unless item.fetch()
+      item.set options
+      p item.save
     end
 
     desc 'category', 'show categories'

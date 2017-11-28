@@ -80,7 +80,7 @@ module ZaimCli
       end
 
       def initialize id:, amount:, category:, genre:, date:, account:, comment:, place:, name:
-        @id       = id.to_i
+        @id       = id
         @amount   = amount.to_i
         @category = category.to_i
         @genre    = genre.to_i
@@ -91,9 +91,8 @@ module ZaimCli
         @place    = place
       end
 
-      def save
-        path = @id.nil? ? "/v2/home/money/payment" : "/v2/home/money/payment/#{@id.to_s}"
-        result = API.post path, {
+      def to_h
+        {
           mapping: 1,
           category_id: @category,
           genre_id: @genre,
@@ -104,8 +103,19 @@ module ZaimCli
           name: @name,
           place: @place,
         }
+      end
+
+      def fetch
+        raise 'not implemented'
+      end
+
+      def save
+        path = @id.nil? ? "/v2/home/money/payment" : "/v2/home/money/payment/#{@id.to_s}"
+        result = API.post path, to_h
         if result["money"]
           @id = result["money"]["id"]
+        else
+          raise "failed save"
         end
       end
 
