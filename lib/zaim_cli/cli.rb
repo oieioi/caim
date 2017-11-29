@@ -28,10 +28,10 @@ module ZaimCli
           money["id"],
           money["date"],
           money["amount"],
-          accounts[money["from_account_id"]].try(:[], "name"),
-          accounts[money["to_account_id"]].try(:[], "name"),
-          categories[money["category_id"]].try(:[], "name"),
-          genres[money["genre_id"]].try(:[], "name"),
+          accounts.find_by_id(money["from_account_id"]).try(:[], "name"),
+          accounts.find_by_id(money["to_account_id"]).try(:[], "name"),
+          categories.find_by_id(money["category_id"]).try(:[], "name"),
+          genres.find_by_id(money["genre_id"]).try(:[], "name"),
           money["comment"],
           money["place"],
         ]
@@ -46,42 +46,40 @@ module ZaimCli
     end
 
     desc 'pay', 'add payment'
-    option :genre,    aliases: :g, required: false
     option :account,  aliases: :a, required: false
     option :date,     aliases: :d, required: false
     option :comment,  aliases: :c, required: false
     option :name,     aliases: :n, required: false
     option :place,    aliases: :p, required: false
     option :id,       aliases: :i, required: false
-    def pay amount
-      genre_id = options[:genre].to_i
-      if genre_id == 0
-        loop do
-          category
-          puts "Input category id"
-          category_id = STDIN.gets.strip.to_i
-          next if category_id == 0
+    def pay amount, genre_id = nil
+      categories = Models::Category.all
+      genres     = Models::Genre.all
 
-          self.genre category: category_id
-          puts "Input genre id"
-          genre_id = STDIN.gets.strip.to_i
-          next if genre_id == 0
+      # genre id 決定さす
+      genre =
+        if genre_id.nil?
+          self.category
+          puts "Input category index"
+          category = categories[STDIN.gets.strip]
 
+          self.genre category["id"]
+          puts "Input genre index"
+          genres[STDIN.gets.strip]
+        else
+          genres.find_by_id genre_id.to_i
         end
-      end
 
-      genre = Models::Genre.all[genre_id]
       if genre.nil?
         warn 'genre not found'
         return
       end
 
-      category = Models::Category.all[genre["category_id"]]
+      category = categories.find_by_id genre["category_id"]
       if category.nil?
         warn 'category not found'
         return
       end
-
 
       item = Models::Money.new({
         id:       options[:id] || nil,
@@ -107,20 +105,6 @@ module ZaimCli
       puts item.save rescue warn "失敗した"
     end
 
-    desc 'update', 'update payment/income/exchange'
-    option :genre,    aliases: :g, required: false
-    option :account,  aliases: :a, required: false
-    option :date,     aliases: :d, required: false
-    option :comment,  aliases: :c, required: false
-    option :name,     aliases: :n, required: false
-    option :place,    aliases: :p, required: false
-    def update id
-      item = Models::Money.new(id: id)
-      raise 'Error' unless item.fetch()
-      item.set options
-      p item.save
-    end
-
     desc 'category', 'show categories'
     option :income, aliases: :i
     option :payment, aliases: :p
@@ -133,40 +117,40 @@ module ZaimCli
         categories = categories.select {|c| c["mode"] == "payment" }
       end
       table = ::Terminal::Table.new({
-        headings: %w{id name},
-        rows: categories.select{|c|c["active"] != -1}.map {|c|[c["id"], c["name"]]}
+        headings: %w{index id name},
+        rows: categories
+          .select{|c|c["active"] != -1}
+          .map {|c|[c["index"], c["id"], c["name"]]}
       })
       puts table
     end
 
     desc 'genre', 'show genre'
-    option :category, aliases: :c
-    def genre
+    def genre category_id = nil
       categories = Models::Category.all
       genres = Models::Genre.all
-      grouped = genres.group_by {|c| c["category_id"]}
 
-      if category_id = options[:category]
-        grouped = grouped.select {|key| key == category_id.to_i}
+      if category_id.present?
+        genres = genres.select {|g| g["category_id"] == category_id.to_i}
       end
 
-      grouped.each {|category_id, g_genres|
-        puts "#{categories[category_id]["name"]} #{categories[category_id]["id"]}"
-        table = ::Terminal::Table.new({
-          headings: %w{id name},
-          rows: g_genres.select{|c|c["active"] != -1}.map {|c|[c["id"], c["name"]]}
-        })
-        puts table
+      table = ::Terminal::Table.new({
+        headings: %w{index category id name},
+        rows: genres
+          .select{|c|c["active"] != -1}
+          .map {|c| [c["index"], categories.find_by_id(c["category_id"])["name"], c["id"], c["name"]]}
+          .sort{|f, s| s[1] <=> f[1]}
+      })
+      puts table
 
-      }
     end
 
-    desc 'account', ''
+    desc 'account', 'show accounts'
     def account
       accounts = Models::Account.all
       table = ::Terminal::Table.new({
-        headings: %w{id name},
-        rows: accounts.select{|c|c["active"] != -1}.map {|c|[c["id"], c["name"]]}
+        headings: %w{index id name},
+        rows: accounts.select{|c|c["active"] != -1}.map {|c| [ c["index"], c["id"], c["name"]]}
       })
       puts table
     end
