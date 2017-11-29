@@ -77,6 +77,15 @@ module ZaimCli
         name:     options[:name] ,
         place:    options[:place] ,
       })
+      puts 'sure? y/n'
+      puts "#{category['name']} #{genre['name']}"
+      p item.to_h
+      yes = STDIN.gets.strip
+
+      if yes == 'n'
+        return
+      end
+
       puts item.save rescue warn "失敗した"
     end
 
