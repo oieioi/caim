@@ -46,7 +46,7 @@ module ZaimCli
     end
 
     desc 'pay', 'add payment'
-    option :genre,    aliases: :g, required: true
+    option :genre,    aliases: :g, required: false
     option :account,  aliases: :a, required: false
     option :date,     aliases: :d, required: false
     option :comment,  aliases: :c, required: false
@@ -54,7 +54,23 @@ module ZaimCli
     option :place,    aliases: :p, required: false
     option :id,       aliases: :i, required: false
     def pay amount
-      genre = Models::Genre.all[options[:genre].to_i]
+      genre_id = options[:genre].to_i
+      if genre_id == 0
+        loop do
+          category
+          puts "Input category id"
+          category_id = STDIN.gets.strip.to_i
+          next if category_id == 0
+
+          self.genre category: category_id
+          puts "Input genre id"
+          genre_id = STDIN.gets.strip.to_i
+          next if genre_id == 0
+
+        end
+      end
+
+      genre = Models::Genre.all[genre_id]
       if genre.nil?
         warn 'genre not found'
         return
@@ -65,6 +81,7 @@ module ZaimCli
         warn 'category not found'
         return
       end
+
 
       item = Models::Money.new({
         id:       options[:id] || nil,
@@ -77,9 +94,10 @@ module ZaimCli
         name:     options[:name] ,
         place:    options[:place] ,
       })
-      puts 'sure? y/n'
       puts "#{category['name']} #{genre['name']}"
       p item.to_h
+
+      puts 'sure? y/n'
       yes = STDIN.gets.strip
 
       if yes == 'n'
@@ -114,20 +132,32 @@ module ZaimCli
       if options[:payment]
         categories = categories.select {|c| c["mode"] == "payment" }
       end
-      categories.each {|c| puts c}
+      table = ::Terminal::Table.new({
+        headings: %w{id name},
+        rows: categories.select{|c|c["active"] != -1}.map {|c|[c["id"], c["name"]]}
+      })
+      puts table
     end
 
     desc 'genre', 'show genre'
+    option :category, aliases: :c
     def genre
       categories = Models::Category.all
       genres = Models::Genre.all
       grouped = genres.group_by {|c| c["category_id"]}
+
+      if category_id = options[:category]
+        grouped = grouped.select {|key| key == category_id.to_i}
+      end
+
       grouped.each {|category_id, g_genres|
         puts "#{categories[category_id]["name"]} #{categories[category_id]["id"]}"
-        padding = " " * 4
-        g_genres.each {|g|
-          puts "#{padding}#{g["name"]}, #{g["id"]}"
-        }
+        table = ::Terminal::Table.new({
+          headings: %w{id name},
+          rows: g_genres.select{|c|c["active"] != -1}.map {|c|[c["id"], c["name"]]}
+        })
+        puts table
+
       }
     end
 
