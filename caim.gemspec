@@ -1,17 +1,17 @@
 
 lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require "zaim_cli/version"
+require "caim/version"
 
 Gem::Specification.new do |spec|
-  spec.name          = "zaim_cli"
-  spec.version       = ZaimCli::VERSION
+  spec.name          = "caim"
+  spec.version       = Caim::VERSION
   spec.authors       = ["oieioi"]
   spec.email         = ["atsuinatsu.samuifuyu@gmail.com"]
 
   spec.summary       = %q{zaim cli}
   spec.description   = %q{zaim cli}
-  spec.homepage      = "https://github.com/oieioi/zaim_cli"
+  spec.homepage      = "https://github.com/oieioi/caim"
   spec.license       = "MIT"
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'

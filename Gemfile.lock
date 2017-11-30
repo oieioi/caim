@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    zaim_cli (0.1.0)
+    caim (0.1.0)
       activesupport
       oauth
       terminal-table
@@ -50,9 +50,9 @@ PLATFORMS
 DEPENDENCIES
   bundler (~> 1.16)
   byebug
+  caim!
   rake (~> 10.0)
   rspec (~> 3.0)
-  zaim_cli!
 
 BUNDLED WITH
    1.16.0

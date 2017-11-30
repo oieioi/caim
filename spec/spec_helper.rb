@@ -1,5 +1,5 @@
 require "bundler/setup"
-require "zaim_cli"
+require "caim"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

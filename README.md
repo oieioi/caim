@@ -1,3 +1,7 @@
+# caim
+
+caim is a terminal base [Zaim](https://zaim.net/) client.
+
 ## Installation
 
 ### Dependencies
@@ -10,14 +14,14 @@
 Clone this repository and
 
     $ bundle install --path vendor/bundle
-    $ bundle exec ./bin/zaim_cli login
+    $ bundle exec ./bin/caim login
 
 ## Usage
 
 Get list
 
-    $ zaim_cli list
-    $ zaim_cli list 2017-11
+    $ caim list
+    $ caim list 2017-11
 
     2017-11-01 458 食費 昼ごはん
     2017-11-01 195 交通費 バス
@@ -26,8 +30,8 @@ Get list
 
 Pay payment
 
-    $ zaim_cli pay 150 --genre genre_id --account 財布 --date 2017-11-23 --comment コカコーラ --place セブンイレブン一番町店
-    $ zaim_cli pay 150 -g genre_id
+    $ caim pay 150 --genre genre_id --account 財布 --date 2017-11-23 --comment コカコーラ --place セブンイレブン一番町店
+    $ caim pay 150 -g genre_id
 
 
 ## TODO
@@ -35,29 +39,29 @@ Pay payment
 
 cache categories, genres and accounts
 
-    $ zaim_cli category update
-    $ zaim_cli category show
+    $ caim category update
+    $ caim category show
 
     id name ...
 
 income
 
-    $ zaim_cli earn 200000 給与収入
+    $ caim earn 200000 給与収入
 
 filter
 
-    $ zaim_cli list --category 食費
+    $ caim list --category 食費
 
 summary
 
-    $ zaim_cli sum 2017-11
-    $ zaim_cli sum 2017-11 -c 食費
+    $ caim sum 2017-11
+    $ caim sum 2017-11 -c 食費
 
     2000
 
 total amounts of each account
 
-    $ zaim_cli account
+    $ caim account
 
     財布 2000
     口座 20

@@ -1,6 +1,6 @@
 require 'oauth'
 
-module ZaimCli
+module Caim
   module OAuth
     extend self
 

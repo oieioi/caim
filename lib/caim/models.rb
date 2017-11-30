@@ -1,4 +1,4 @@
-module ZaimCli
+module Caim
   module Models
 
     class Model

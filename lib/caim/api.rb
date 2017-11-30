@@ -1,6 +1,6 @@
 require 'oauth'
 
-module ZaimCli
+module Caim
   class API
     def self.get endpoint_path
       result = endpoint.get "https://api.zaim.net#{endpoint_path}"

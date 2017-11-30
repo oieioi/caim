@@ -6,7 +6,7 @@ require 'active_support'
 require 'active_support/core_ext'
 require 'terminal-table'
 
-module ZaimCli
+module Caim
   class CLI < Thor
 
     desc "login", "login"

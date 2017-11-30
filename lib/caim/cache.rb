@@ -1,4 +1,4 @@
-module ZaimCli
+module Caim
   module Cache
     FILE_NAME = "config.yml"
     def self.get key = nil
