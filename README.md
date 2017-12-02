@@ -1,6 +1,6 @@
 # caim
 
-caim is a terminal base [Zaim](https://zaim.net/) client.
+caim is a terminal based [Zaim](https://zaim.net/) client.
 
 ## Installation
 
@@ -18,6 +18,10 @@ Clone this repository and
 
 ## Usage
 
+OAuth
+
+    $ caim login
+
 Get list
 
     $ caim list
@@ -27,26 +31,23 @@ Get list
     2017-11-01 195 交通費 バス
     ...
 
+Get accounts, categories, genres
+
+    $ caim account
+    $ caim category
+    $ caim genre
 
 Pay payment
 
-    $ caim pay 150 --genre genre_id --account 財布 --date 2017-11-23 --comment コカコーラ --place セブンイレブン一番町店
-    $ caim pay 150 -g genre_id
+    $ caim pay 150 genre_index --account account_index --date 2017-11-23 --comment コカコーラ --place セブンイレブン一番町店
+    $ caim pay 150
 
 
 ## TODO
 
-
-cache categories, genres and accounts
-
-    $ caim category update
-    $ caim category show
-
-    id name ...
-
 income
 
-    $ caim earn 200000 給与収入
+    $ caim earn 200000 genre_index -a account_index
 
 filter
 
@@ -55,7 +56,7 @@ filter
 summary
 
     $ caim sum 2017-11
-    $ caim sum 2017-11 -c 食費
+    $ caim sum 2017-11 食費
 
     2000
 
