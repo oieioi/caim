@@ -31,7 +31,7 @@ Get list
     2017-11-01 195 交通費 バス
     ...
 
-Get accounts, categories, genres
+Get accounts, categories and genres with index
 
     $ caim account
     $ caim category
@@ -39,8 +39,15 @@ Get accounts, categories, genres
 
 Pay payment
 
-    $ caim pay 150 -- genre genre_index --account account_index --date 2017-11-23 --comment コカコーラ --place セブンイレブン一番町店
-    # Get genre interactively
+    $ caim pay 150 --yes \
+      --genre genre_index \
+      --account account_index \
+      --date 2017-11-23 \
+      --comment コカコーラ \
+      --place セブンイレブン一番町店
+
+Interactively determine genre and pay payment
+
     $ caim pay 150
 
 
@@ -49,8 +56,16 @@ Pay payment
 income
 
     $ caim earn 200000 genre_index -a account_index
+    
+Update money
+    
+    $ caim update
 
-filter
+Delete money
+
+format CSV
+
+filter list
 
     $ caim list --category 食費
 
