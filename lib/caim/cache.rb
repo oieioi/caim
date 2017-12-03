@@ -1,14 +1,20 @@
 module Caim
   module Cache
     FILE_NAME = "config.yml"
+    @@memo = {}
     def self.get key = nil
-      if not File.exist? FILE_NAME
-        File.open(FILE_NAME, 'w').close
+
+      if @@memo[key].present?
+        return @@memo[key]
       end
-      yaml = YAML.load(File.open(FILE_NAME))
-      return nil  if yaml == false
-      return yaml if key.nil?
-      yaml[key]
+
+      # キャッシュファイルがない時は作成する
+      File.open(FILE_NAME, 'w').close if not File.exist? FILE_NAME
+
+      result = YAML.load(File.open(FILE_NAME))
+      return nil    if result == false
+      return result if key.nil?
+      @@memo[key] = result[key]
     end
 
     def self.save save_item
