@@ -40,7 +40,7 @@ Get accounts, categories, genres
 Pay payment
 
     $ caim pay 150 -- genre genre_index --account account_index --date 2017-11-23 --comment コカコーラ --place セブンイレブン一番町店
-    # Get genre interactively 
+    # Get genre interactively
     $ caim pay 150
 
 
