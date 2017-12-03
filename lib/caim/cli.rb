@@ -36,13 +36,14 @@ module Caim
     end
 
     desc 'pay', 'add payment'
-    option :genre,    aliases: :g, required: false
-    option :account,  aliases: :a, required: false
-    option :date,     aliases: :d, required: false
-    option :comment,  aliases: :c, required: false
-    option :name,     aliases: :n, required: false
-    option :place,    aliases: :p, required: false
-    option :yes,      aliases: :y, required: false, type: :boolean
+    option :genre,       aliases: :g, required: false
+    option :account,     aliases: :a, required: false
+    option :date,        aliases: :d, required: false
+    option :comment,     aliases: :c, required: false
+    option :name,        aliases: :n, required: false
+    option :place,       aliases: :p, required: false
+    option :yes,         aliases: :y, required: false, type: :boolean
+    option :interactive, aliases: :i, required: false, type: :boolean
     def pay amount
       genre, category = InputHelper.genre_interactive options[:genre]
 
@@ -56,22 +57,29 @@ module Caim
         return
       end
 
-      item = Models::Money.new({
-        id:       options[:id] || nil,
-        amount:   amount,
-        category: category["local_id"],
-        genre:    genre['id'],
-        account:  options[:account] ,
-        date:     options[:date] || Time.new.strftime('%Y-%m-%d'),
-        comment:  options[:comment] ,
-        name:     options[:name] ,
-        place:    options[:place] ,
+      account_id = if options[:account].nil? and options[:interactive]
+        InputHelper.account_interactive.try(:fetch, "id")
+      else
+        options[:account].to_i
+      end
+
+      money = Models::Money.new({
+        id:              options[:id] || nil,
+        amount:          amount,
+        category_id:     category["local_id"],
+        genre_id:        genre['id'],
+        from_account_id: account_id,
+        date:            options[:date] || Time.new.strftime('%Y-%m-%d'),
+        comment:         options[:comment] ,
+        name:            options[:name] ,
+        place:           options[:place] ,
       })
-      puts "#{category['name']} #{genre['name']}"
-      p item.to_h
+
+      puts 'You pay payment:'
+      OutputHelper.pretty_money money, padding: "  "
 
       if options[:yes].blank?
-        puts 'sure? y/n'
+        puts 'Are sure? (y/n)'
         yes = STDIN.gets.strip
 
         if ['n', 'no', 'none', 'false'].include? yes
@@ -79,7 +87,13 @@ module Caim
         end
       end
 
-      puts item.save rescue warn "失敗した"
+      puts money.save rescue warn "失敗した"
+    end
+
+    desc 'delete', 'delete money'
+    def delete money_id
+
+
     end
 
     desc 'category', 'show categories'

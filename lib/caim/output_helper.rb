@@ -4,6 +4,21 @@ module Caim
   module OutputHelper
     extend self
 
+    def pretty_money money, opt = {padding: ""}
+      category = Models::Category.all.find {|item| item["local_id"] == money.category_id }
+      genre    = Models::Genre.all.find_by_id(money.genre_id)
+      account  = Models::Account.all.find_by_id(money.from_account_id)
+
+      puts money.to_h.merge({
+        category: category.try(:fetch, "name"),
+        genre: genre.try(:fetch, "name"),
+        from_account: account.try(:fetch, "name"),
+      }).to_a.map{|item|
+        key, value = item
+        "#{opt[:padding]}#{key}: #{value}"
+      }.join("\n")
+    end
+
     def account_table accounts
       puts ::Terminal::Table.new({
         headings: %w{index id name},
