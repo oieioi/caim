@@ -13,8 +13,8 @@ caim is a terminal based [Zaim](https://zaim.net/) client.
 
 Clone this repository and
 
-    $ bundle install --path vendor/bundle
-    $ bundle exec ./bin/caim login
+    $ bundle install
+    $ ./bin/caim login
 
 ## Usage
 
