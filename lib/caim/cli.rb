@@ -26,36 +26,12 @@ module Caim
         moneys = Models::Money.where time: month
       end
 
-      categories = Models::Category.all
-      genres = Models::Genre.all
-      accounts = Models::Account.all
-
       if options[:format] == 'raw'
         p moneys
       elsif options[:format] == 'json'
         #p JSON.dump moneys
       else
-
-        rows = moneys.reverse_each.map {|money|
-          [
-            money["id"],
-            money["date"],
-            money["amount"],
-            accounts.find_by_id(money["from_account_id"]).try(:[], "name"),
-            accounts.find_by_id(money["to_account_id"]).try(:[], "name"),
-            categories.find_by_id(money["category_id"]).try(:[], "name"),
-            genres.find_by_id(money["genre_id"]).try(:[], "name"),
-            money["comment"],
-            money["place"],
-          ]
-        }
-        table = ::Terminal::Table.new({
-          headings: %w{
-            id 日付 代金 金額 入金 カテゴリ 細カテゴリ メモ お店
-          },
-            rows: rows
-        })
-        puts table
+        OutputHelper.money_table moneys
       end
     end
 

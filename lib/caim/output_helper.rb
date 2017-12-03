@@ -34,6 +34,32 @@ module Caim
       })
     end
 
+    def money_table moneys
+      categories = Models::Category.all
+      genres = Models::Genre.all
+      accounts = Models::Account.all
+
+      rows = moneys.reverse_each.map {|money|
+        [
+          money["id"],
+          money["date"],
+          money["amount"],
+          accounts.find_by_id(money["from_account_id"]).try(:[], "name"),
+          accounts.find_by_id(money["to_account_id"]).try(:[], "name"),
+          categories.find_by_id(money["category_id"]).try(:[], "name"),
+          genres.find_by_id(money["genre_id"]).try(:[], "name"),
+          money["comment"],
+          money["place"],
+        ]
+      }
+      puts ::Terminal::Table.new({
+        headings: %w{
+            id 日付 代金 金額 入金 カテゴリ 細カテゴリ メモ お店
+        },
+          rows: rows
+      })
+    end
+
     def table array, header
     end
   end
