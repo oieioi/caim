@@ -3,20 +3,17 @@ module Caim
 
     class Model
       include Enumerable
-      def each
-        @list.each {|item| yield item }
+
+      def self.key
+        self::MODEL_KEY
       end
 
-      def size
-        @list.size
-      end
-
-      def find_by_id id
-        @@list.find {|item| item["id"] == id }
+      def self.all
+        all_with_key key
       end
 
       private
-      def self.all_with_key key, opt
+      def self.all_with_key key
         key = key.to_s
         keys = key.pluralize
         cache = Cache.get(keys.to_sym)
@@ -69,29 +66,19 @@ module Caim
     end
 
     class Category < Model
-      def self.all opt = {}
-        all_with_key :category, opt
-      end
+      MODEL_KEY = :category
     end
 
     class Genre < Model
-      def self.all opt = {}
-        all_with_key :genre, opt
-      end
+      MODEL_KEY = :genre
     end
 
     class Account < Model
-      def self.all opt = {}
-        all_with_key :account, opt
-      end
+      MODEL_KEY = :account
     end
 
     class Money < Model
       attr_accessor :id, :amount, :category, :genre, :date, :account, :comment, :place, :name
-
-      def self.all opt = {}
-        all_with_key :money, opt
-      end
 
       def self.where time:
         url = "/v2/home/money?start_date=#{time.beginning_of_month.strftime("%Y-%m-%d")}&end_date=#{time.end_of_month.strftime("%Y-%m-%d")}"

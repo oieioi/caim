@@ -3,7 +3,6 @@ module Caim
     extend self
 
     def genre_interactive genre_index
-      p genre_index
       categories = Models::Category.all
       genres     = Models::Genre.all
 
