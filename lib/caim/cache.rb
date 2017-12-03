@@ -1,6 +1,7 @@
+require 'fileutils'
 module Caim
   module Cache
-    FILE_NAME = "config.yml"
+    FILE_NAME = "#{ENV["HOME"]}/.caim/config.yml"
     @@memo = {}
     def self.get key = nil
 
@@ -9,7 +10,10 @@ module Caim
       end
 
       # キャッシュファイルがない時は作成する
-      File.open(FILE_NAME, 'w').close if not File.exist? FILE_NAME
+      if not File.exist? FILE_NAME
+        FileUtils.mkdir_p(File.dirname(FILE_NAME))
+        File.open(FILE_NAME, 'w').close
+      end
 
       result = YAML.load(File.open(FILE_NAME))
       return nil    if result == false
