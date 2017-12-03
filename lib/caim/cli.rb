@@ -63,7 +63,7 @@ module Caim
         options[:account].to_i
       end
 
-      money = Models::Money.new({
+      money = Models::Money.new(:payment, {
         id:              options[:id] || nil,
         amount:          amount,
         category_id:     category["local_id"],
@@ -91,9 +91,19 @@ module Caim
     end
 
     desc 'delete', 'delete money'
+    option :force, aliases: :f, required: false, type: :boolean
     def delete money_id
+      if options[:force].blank?
+        puts "You should remove #{money_id}."
+        print 'Are sure? (y/n): '
+        yes = STDIN.gets.strip
 
+        if ['n', 'no', 'none', 'false'].include? yes
+          return
+        end
+      end
 
+      puts Models::Money.new(:payment, {id: money_id.to_i}).destroy rescue warn '失敗した'
     end
 
     desc 'category', 'show categories'

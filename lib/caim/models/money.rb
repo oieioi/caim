@@ -20,7 +20,8 @@ module Caim
         @@list = Collection.new result["money"]
       end
 
-      def initialize values
+      def initialize mode, values
+        @mode = mode
         @@attrs.each {|name|
           self.send("#{name}=".to_sym, values[name])
         }
@@ -48,8 +49,7 @@ module Caim
       end
 
       def save
-        path = @id.nil? ? "/v2/home/money/payment" : "/v2/home/money/payment/#{@id.to_s}"
-        result = API.post path, to_h
+        result = API.post request_path, to_h
         if result["money"]
           @id = result["money"]["id"]
         else
@@ -59,11 +59,21 @@ module Caim
 
       def destroy
 
+        if @id.nil?
+          raise 'nothing ID, Undeletable!'
+        end
+
+        result = API.delete request_path
+        if result["money"]
+          @id = result["money"]["id"]
+        else
+          raise "failed destroy"
+        end
       end
 
       private
-      def path
-
+      def request_path
+        @id.nil? ? "/v2/home/money/#{@mode.to_s}" : "/v2/home/money/#{@mode.to_s}/#{@id.to_s}"
       end
     end
   end

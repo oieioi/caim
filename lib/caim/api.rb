@@ -15,6 +15,11 @@ module Caim
       JSON.parse(result.body)
     end
 
+    def self.delete endpoint_path
+      result = endpoint.delete "https://api.zaim.net#{endpoint_path}"
+      JSON.parse(result.body)
+    end
+
     private
     def self.endpoint
       tokens = Cache.get(:auth)
