@@ -88,6 +88,11 @@ module Caim
 
     class Money < Model
       attr_accessor :id, :amount, :category, :genre, :date, :account, :comment, :place, :name
+
+      def self.all opt = {}
+        all_with_key :money, opt
+      end
+
       def self.where time:
         url = "/v2/home/money?start_date=#{time.beginning_of_month.strftime("%Y-%m-%d")}&end_date=#{time.end_of_month.strftime("%Y-%m-%d")}"
         result = API.get url

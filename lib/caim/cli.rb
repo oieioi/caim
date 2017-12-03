@@ -15,34 +15,50 @@ module Caim
     end
 
     desc "list", "list zaim"
+    option :all,  aliases: :a, required: false, type: :boolean
+    option :format,  aliases: :f, required: false
     def list month = Time.current.strftime("%Y-%m-%d")
+
+      month = Time.strptime("#{month}-01", "%Y-%m-%d") rescue Time.current
+      if options[:all].present?
+        moneys = Models::Money.all
+      else
+        moneys = Models::Money.where time: month
+      end
 
       categories = Models::Category.all
       genres = Models::Genre.all
       accounts = Models::Account.all
-      month = Time.strptime("#{month}-01", "%Y-%m-%d") rescue Time.current
-      moneys = Models::Money.where time: month
 
-      rows = moneys.reverse_each.map {|money|
-        [
-          money["id"],
-          money["date"],
-          money["amount"],
-          accounts.find_by_id(money["from_account_id"]).try(:[], "name"),
-          accounts.find_by_id(money["to_account_id"]).try(:[], "name"),
-          categories.find_by_id(money["category_id"]).try(:[], "name"),
-          genres.find_by_id(money["genre_id"]).try(:[], "name"),
-          money["comment"],
-          money["place"],
-        ]
-      }
-      table = ::Terminal::Table.new({
-        headings: %w{
+
+
+      if options[:format] == 'raw'
+        p moneys
+      elsif options[:format] == 'json'
+        #p JSON.dump moneys
+      else
+
+        rows = moneys.reverse_each.map {|money|
+          [
+            money["id"],
+            money["date"],
+            money["amount"],
+            accounts.find_by_id(money["from_account_id"]).try(:[], "name"),
+            accounts.find_by_id(money["to_account_id"]).try(:[], "name"),
+            categories.find_by_id(money["category_id"]).try(:[], "name"),
+            genres.find_by_id(money["genre_id"]).try(:[], "name"),
+            money["comment"],
+            money["place"],
+          ]
+        }
+        table = ::Terminal::Table.new({
+          headings: %w{
             id 日付 代金 金額 入金 カテゴリ 細カテゴリ メモ お店
-        },
-          rows: rows
-      })
-      puts table
+          },
+            rows: rows
+        })
+        puts table
+      end
     end
 
     desc 'pay', 'add payment'
