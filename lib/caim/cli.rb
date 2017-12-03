@@ -51,31 +51,14 @@ module Caim
     option :comment,  aliases: :c, required: false
     option :name,     aliases: :n, required: false
     option :place,    aliases: :p, required: false
-    option :id,       aliases: :i, required: false
     def pay amount, genre_id = nil
-      categories = Models::Category.all
-      genres     = Models::Genre.all
-
-      # genre id 決定さす
-      genre =
-        if genre_id.nil?
-          self.category
-          puts "Input category index"
-          category = categories[STDIN.gets.strip]
-
-          self.genre category["id"]
-          puts "Input genre index"
-          genres[STDIN.gets.strip]
-        else
-          genres.find_by_id genre_id.to_i
-        end
+      genre, category = get_genre_interactive genre_id
 
       if genre.nil?
         warn 'genre not found'
         return
       end
 
-      category = categories.find_by_id genre["category_id"]
       if category.nil?
         warn 'category not found'
         return
@@ -155,5 +138,27 @@ module Caim
       puts table
     end
 
+    private
+    def get_genre_interactive genre_id
+      categories = Models::Category.all
+      genres     = Models::Genre.all
+
+      genre = if genre_id.nil?
+        self.category
+        puts "Input category index"
+        category = categories[STDIN.gets.strip]
+
+        self.genre category["id"]
+        puts "Input genre index"
+        genres[STDIN.gets.strip]
+      else
+        genres.find_by_id genre_id.to_i
+      end
+
+      category = categories.find_by_id genre["category_id"]
+
+      [genre, category]
+
+    end
   end
 end
