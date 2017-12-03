@@ -30,8 +30,6 @@ module Caim
       genres = Models::Genre.all
       accounts = Models::Account.all
 
-
-
       if options[:format] == 'raw'
         p moneys
       elsif options[:format] == 'json'
@@ -62,13 +60,15 @@ module Caim
     end
 
     desc 'pay', 'add payment'
+    option :genre,    aliases: :g, required: false
     option :account,  aliases: :a, required: false
     option :date,     aliases: :d, required: false
     option :comment,  aliases: :c, required: false
     option :name,     aliases: :n, required: false
     option :place,    aliases: :p, required: false
-    def pay amount, genre_id = nil
-      genre, category = get_genre_interactive genre_id
+    option :yes,      aliases: :y, required: false, type: :boolean
+    def pay amount
+      genre, category = InputHelper.genre_interactive options[:genre]
 
       if genre.nil?
         warn 'genre not found'
@@ -94,87 +94,56 @@ module Caim
       puts "#{category['name']} #{genre['name']}"
       p item.to_h
 
-      puts 'sure? y/n'
-      yes = STDIN.gets.strip
+      if options[:yes].blank?
+        puts 'sure? y/n'
+        yes = STDIN.gets.strip
 
-      if yes == 'n'
-        return
+        if ['n', 'no', 'none', 'false'].include? yes
+          return
+        end
       end
 
       puts item.save rescue warn "失敗した"
     end
 
     desc 'category', 'show categories'
-    option :income, aliases: :i
-    option :payment, aliases: :p
+    option :income , aliases: :i, type: :boolean
+    option :payment, aliases: :p, type: :boolean
     def category
       categories = Models::Category.all
+
       if options[:income]
         categories = categories.select {|c| c["mode"] == "income" }
       end
       if options[:payment]
         categories = categories.select {|c| c["mode"] == "payment" }
       end
-      table = ::Terminal::Table.new({
-        headings: %w{index id name},
-        rows: categories
-          .select{|c|c["active"] != -1}
-          .map {|c|[c["index"], c["id"], c["name"]]}
-      })
-      puts table
+
+      activated = categories.select{|c|c["active"] != -1}
+
+      OutputHelper.category_table activated
     end
 
     desc 'genre', 'show genre'
     def genre category_id = nil
-      categories = Models::Category.all
       genres = Models::Genre.all
 
       if category_id.present?
         genres = genres.select {|g| g["category_id"] == category_id.to_i}
       end
 
-      table = ::Terminal::Table.new({
-        headings: %w{index category id name},
-        rows: genres
-          .select{|c|c["active"] != -1}
-          .map {|c| [c["index"], categories.find_by_id(c["category_id"])["name"], c["id"], c["name"]]}
-          .sort{|f, s| s[1] <=> f[1]}
-      })
-      puts table
+      activated = genres
+        .select{|c|c["active"] != -1}
+        .sort{|f, s| s[1] <=> f[1]}
 
+      OutputHelper.genre_table activated
     end
 
     desc 'account', 'show accounts'
     def account
-      accounts = Models::Account.all
-      table = ::Terminal::Table.new({
-        headings: %w{index id name},
-        rows: accounts.select{|c|c["active"] != -1}.map {|c| [ c["index"], c["id"], c["name"]]}
-      })
-      puts table
+      OutputHelper.account_table Models::Account.all
     end
 
     private
-    def get_genre_interactive genre_id
-      categories = Models::Category.all
-      genres     = Models::Genre.all
-
-      genre = if genre_id.nil?
-        self.category
-        puts "Input category index"
-        category = categories[STDIN.gets.strip]
-
-        self.genre category["id"]
-        puts "Input genre index"
-        genres[STDIN.gets.strip]
-      else
-        genres.find_by_id genre_id.to_i
-      end
-
-      category = categories.find_by_id genre["category_id"]
-
-      [genre, category]
-
-    end
   end
 end
