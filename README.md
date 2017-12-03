@@ -39,17 +39,16 @@ Get accounts, categories and genres with index
 
 Pay payment
 
-    $ caim pay 150 --yes \
-      --genre genre_index \
-      --account account_index \
-      --date 2017-11-23 \
-      --comment コカコーラ \
-      --place セブンイレブン一番町店
-
-Interactively determine genre and pay payment
-
-    $ caim pay 150
-
+```
+$ caim pay 150 --yes \
+--genre genre_index \
+--account account_index \
+--date 2017-11-23 \
+--comment コカコーラ \
+--place セブンイレブン一番町店
+# Interactively determine genre and pay payment
+$ caim pay 150
+```
 
 ## TODO
 
