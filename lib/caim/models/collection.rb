@@ -19,7 +19,7 @@ module Caim
       end
 
       def [] index
-        if index.class == String
+        if index =~ /^[a-z]+$/
           index = var2num(index)
         end
         @list[index]
@@ -31,7 +31,7 @@ module Caim
 
       private
       def var2num_table
-        ("aa".."zz").to_a
+        ('a'..'zz').to_a
       end
 
       def var2num var

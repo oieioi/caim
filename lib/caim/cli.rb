@@ -57,10 +57,10 @@ module Caim
         return
       end
 
-      account_id = if options[:account].nil? and options[:interactive]
-        InputHelper.account_interactive.try(:fetch, "id")
+      account = if options[:account].nil? and options[:interactive]
+        InputHelper.account_interactive
       else
-        options[:account].to_i
+        Models::Account.all[options[:account]]
       end
 
       money = Models::Money.new(:payment, {
@@ -68,7 +68,7 @@ module Caim
         amount:          amount,
         category_id:     category["local_id"],
         genre_id:        genre['id'],
-        from_account_id: account_id,
+        from_account_id: account.try(:fetch, "id"),
         date:            options[:date] || Time.new.strftime('%Y-%m-%d'),
         comment:         options[:comment] ,
         name:            options[:name] ,
