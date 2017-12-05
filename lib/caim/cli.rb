@@ -14,10 +14,10 @@ module Caim
       OAuth.get_access_token
     end
 
-    desc "list", "list zaim"
+    desc "ls", "list zaim"
     option :all,  aliases: :a, required: false, type: :boolean
     option :format,  aliases: :f, required: false
-    def list month = Time.current.strftime("%Y-%m-%d")
+    def ls month = Time.current.strftime("%Y-%m-%d")
 
       month = Time.strptime("#{month}-01", "%Y-%m-%d") rescue Time.current
       if options[:all].present?

@@ -24,8 +24,8 @@ OAuth
 
 Get list
 
-    $ caim list
-    $ caim list 2017-11
+    $ caim ls
+    $ caim ls 2017-11
 
 Get accounts, categories and genres with index
 
