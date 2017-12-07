@@ -44,50 +44,30 @@ module Caim
     option :place,       aliases: :p, required: false
     option :yes,         aliases: :y, required: false, type: :boolean
     option :interactive, aliases: :i, required: false, type: :boolean
-    def pay amount
-      genre, category = InputHelper.genre_interactive options[:genre]
+    def pay amount = nil
 
-      if genre.nil?
-        warn 'genre not found'
-        return
-      end
+      attrs  = options[:interactive] ?
+        InputHelper.make_payment_attrs_interactively(amount, options) :
+        InputHelper.make_payment_attrs(amount, options)
 
-      if category.nil?
-        warn 'category not found'
-        return
-      end
+      money = Models::Money.new(:payment, attrs)
 
-      account = if options[:account].nil? and options[:interactive]
-        InputHelper.account_interactive
-      else
-        Models::Account.all[options[:account]]
-      end
-
-      money = Models::Money.new(:payment, {
-        id:              options[:id] || nil,
-        amount:          amount,
-        category_id:     category["local_id"],
-        genre_id:        genre['id'],
-        from_account_id: account.try(:fetch, "id"),
-        date:            options[:date] || Time.new.strftime('%Y-%m-%d'),
-        comment:         options[:comment] ,
-        name:            options[:name] ,
-        place:           options[:place] ,
-      })
-
-      puts 'You pay payment:'
-      OutputHelper.pretty_money money, padding: "  "
+      puts 'You should pay payment:'
+      OutputHelper.pretty_money money, padding: "    "
 
       if options[:yes].blank?
-        puts 'Are sure? (y/n)'
-        yes = STDIN.gets.strip
-
-        if ['n', 'no', 'none', 'false'].include? yes
-          return
+        case InputHelper.confirm %w{yes no edit}
+        when 'n' then return
+        when 'e' then raise 'not implmented!'
         end
       end
 
-      puts money.save rescue warn "失敗した"
+      id = money.save
+      puts "success! #{id}"
+
+    rescue => e
+      warn e
+      warn "失敗した"
     end
 
     desc 'delete', 'delete money'
@@ -95,11 +75,8 @@ module Caim
     def delete money_id
       if options[:force].blank?
         puts "You should remove #{money_id}."
-        print 'Are sure? (y/n): '
-        yes = STDIN.gets.strip
-
-        if ['n', 'no', 'none', 'false'].include? yes
-          return
+        case InputHelper.confirm
+        when 'n' then exit 0
         end
       end
 
