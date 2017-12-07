@@ -14,7 +14,8 @@ caim is a terminal based [Zaim](https://zaim.net/) client.
 Clone this repository and
 
     $ bundle install
-    $ alias caim="BUNDLE_GEMFILE=`pwd`/Gemfile bundle exec ruby `pwd`/bin/caim"
+    $ echo alias caim=\"BUNDLE_GEMFILE=`pwd`/Gemfile bundle exec ruby `pwd`/bin/caim\" >> ~/.bash_profile
+    $ source ~/.bash_profile
 
 ## Usage
 
@@ -42,8 +43,8 @@ $ caim pay 150 --yes \
   --date 2017-11-23 \
   --comment コカコーラ \
   --place セブンイレブン一番町店
-# Interactively determine genre, account
-$ caim pay 150 -i
+# Interactively
+$ caim pay -i
 ```
 
 Delete money
@@ -56,22 +57,32 @@ income
 
     $ caim earn 200000 genre_index -a account_index
 
+transfer
+
+    $ caim mv 20000 from_account_id to_account_id
+
 Update money
 
-    $ caim update
-
-format CSV
+    $ caim update money_id
 
 filter list
 
-    $ caim list --category 食費
+    $ caim ls --category 食費
+
+format CSV
+
+    $ caim ls --all --format csv
 
 summary
 
     $ caim sum 2017-11
     $ caim sum 2017-11 食費
 
-    2000
+Update master data
+
+    $ caim category update
+    $ caim genre update
+    $ caim account update
 
 total amounts of each account
 
@@ -82,6 +93,7 @@ total amounts of each account
     クレジット -10000
     ...
 
+And publish as gem !
 
 
 ## License
