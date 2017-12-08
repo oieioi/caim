@@ -70,9 +70,9 @@ module Caim
       warn "失敗した"
     end
 
-    desc 'delete', 'delete money'
+    desc 'rm', 'remove money'
     option :force, aliases: :f, required: false, type: :boolean
-    def delete money_id
+    def rm money_id
       if options[:force].blank?
         puts "You should remove #{money_id}."
         case InputHelper.confirm

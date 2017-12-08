@@ -47,9 +47,9 @@ $ caim pay 150 --yes \
 $ caim pay -i
 ```
 
-Delete money
+Remove money
 
-    $ caim delete money_id
+    $ caim rm money_id
 
 ## TODO
 
