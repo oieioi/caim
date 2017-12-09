@@ -1,18 +1,6 @@
 module Caim
   module Models
     class Money < Model
-      @@attrs = [
-        :id,
-        :amount,
-        :category_id,
-        :genre_id,
-        :date,
-        :from_account_id,
-        :comment,
-        :place,
-        :name
-      ]
-      attr_accessor(*@@attrs)
 
       def self.where time:
         url = "/v2/home/money?start_date=#{time.beginning_of_month.strftime("%Y-%m-%d")}&end_date=#{time.end_of_month.strftime("%Y-%m-%d")}"
@@ -20,9 +8,13 @@ module Caim
         @@list = Collection.new result["money"]
       end
 
+      def self.attrs
+        raise 'not implemented'
+      end
+
       def initialize mode, values
         @mode = mode
-        @@attrs.each {|name|
+        self.class.attrs.each {|name|
           self.send("#{name}=".to_sym, values[name])
         }
       end
@@ -31,7 +23,7 @@ module Caim
         result = {
           mapping: 1,
         }
-        @@attrs.each{|name|
+        self.class.attrs.each{|name|
           result[name] = self.send(name)
         }
         result

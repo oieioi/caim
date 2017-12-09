@@ -50,7 +50,7 @@ module Caim
         InputHelper.make_payment_attrs_interactively(amount, options) :
         InputHelper.make_payment_attrs(amount, options)
 
-      money = Models::Money.new(:payment, attrs)
+      money = Models::Payment.new(attrs)
 
       puts 'You should pay payment:'
       OutputHelper.pretty_money money, padding: "    "
@@ -65,9 +65,6 @@ module Caim
       id = money.save
       puts "success! #{id}"
 
-    rescue => e
-      warn e
-      warn "失敗した"
     end
 
     desc 'rm', 'remove money'
@@ -80,7 +77,7 @@ module Caim
         end
       end
 
-      puts Models::Money.new(:payment, {id: money_id.to_i}).destroy rescue warn '失敗した'
+      puts Models::Payment.new(id: money_id.to_i).destroy
     end
 
     desc 'category', 'show categories'
