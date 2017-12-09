@@ -21,8 +21,10 @@ module Caim
       def [] index
         if index =~ /^[a-z]+$/
           index = var2num(index)
+          @list[index]
+        else
+          find_by_id index
         end
-        @list[index]
       end
 
       def size
