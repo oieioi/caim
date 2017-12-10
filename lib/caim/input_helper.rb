@@ -48,7 +48,7 @@ module Caim
         amount:        raw[:amount],
         date:          raw[:date] || Time.new.strftime('%Y-%m-%d'),
         to_account_id: account.try(:fetch, "id"),
-        comment:       raw[:comment],
+        comment:       raw[:memo],
         place:         raw[:place],
       }
     end
@@ -74,7 +74,7 @@ module Caim
         genre_id:        genre['id'],
         from_account_id: account.try(:fetch, "id"),
         date:            raw[:date] || Time.new.strftime('%Y-%m-%d'),
-        comment:         raw[:comment] ,
+        comment:         raw[:memo] ,
         name:            raw[:name] ,
         place:           raw[:place] ,
       }

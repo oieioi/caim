@@ -52,7 +52,7 @@ module Caim
     option :genre,       aliases: :g, required: false
     option :account,     aliases: :a, required: false
     option :date,        aliases: :d, required: false
-    option :comment,     aliases: :c, required: false
+    option :memo,        aliases: :m, required: false
     option :name,        aliases: :n, required: false
     option :place,       aliases: :p, required: false
     option :yes,         aliases: :y, required: false, type: :boolean
@@ -62,10 +62,10 @@ module Caim
     end
 
     desc 'earn', 'add income'
-    option :category,    aliases: :ca, required: false
+    option :category,    aliases: :c, required: false
     option :account,     aliases: :a, required: false
     option :date,        aliases: :d, required: false
-    option :comment,     aliases: :co, required: false
+    option :memo,        aliases: :m, required: false
     option :place,       aliases: :p, required: false
     option :yes,         aliases: :y, required: false, type: :boolean
     option :interactive, aliases: :i, required: false, type: :boolean
