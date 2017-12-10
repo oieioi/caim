@@ -18,7 +18,6 @@ module Caim
     option :all,  aliases: :a, required: false, type: :boolean
     option :format,  aliases: :f, required: false
     option :summary,  aliases: :s, required: false, type: :boolean
-
     def ls month = Time.current.strftime("%Y-%m-%d")
 
       month = Time.strptime("#{month}-01", "%Y-%m-%d") rescue Time.current

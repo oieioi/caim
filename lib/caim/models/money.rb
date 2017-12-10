@@ -1,6 +1,7 @@
 module Caim
   module Models
     class Money < Model
+      MODEL_KEY = :money
 
       def self.where time:
         url = "/v2/home/money?start_date=#{time.beginning_of_month.strftime("%Y-%m-%d")}&end_date=#{time.end_of_month.strftime("%Y-%m-%d")}"
