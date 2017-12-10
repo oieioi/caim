@@ -27,6 +27,8 @@ Get list
 
     $ caim ls
     $ caim ls 2017-11
+    $ caim ls --summary
+    $ caim ls --format json
 
 Get accounts, categories and genres with index
 
@@ -41,8 +43,9 @@ $ caim pay 150 --yes \
   --genre genre_index \
   --account account_index \
   --date 2017-11-23 \
-  --comment コカコーラ \
+  --memo コカコーラ \
   --place セブンイレブン一番町店
+
 # Interactively
 $ caim pay -i
 ```
@@ -50,7 +53,13 @@ $ caim pay -i
 Earn income
 
 ```
-$ caim earn 200000 --category category_index --account account_index
+$ caim earn 200000 \
+  --category category_index \
+  --account account_index \
+  --memo 11月分給与 \
+  --place バイト先 \
+  --date 2017-11-25
+
 # Interactively
 $ caim earn -i
 ```
