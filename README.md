@@ -47,15 +47,19 @@ $ caim pay 150 --yes \
 $ caim pay -i
 ```
 
+Earn income
+
+```
+$ caim earn 200000 --category category_index --account account_index
+# Interactively
+$ caim earn -i
+```
+
 Remove money
 
     $ caim rm money_id
 
 ## TODO
-
-income
-
-    $ caim earn 200000 genre_index -a account_index
 
 transfer
 
