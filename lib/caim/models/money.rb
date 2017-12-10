@@ -9,6 +9,13 @@ module Caim
         @@list = Collection.new result["money"]
       end
 
+      # TODO: Models::base なんとかする
+      def self.all
+        url = "/v2/home/money"
+        result = API.get url
+        @@list = Collection.new result["money"]
+      end
+
       def self.attrs
         raise 'not implemented'
       end
