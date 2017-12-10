@@ -17,6 +17,8 @@ module Caim
     desc "ls", "list zaim"
     option :all,  aliases: :a, required: false, type: :boolean
     option :format,  aliases: :f, required: false
+    option :summary,  aliases: :s, required: false, type: :boolean
+
     def ls month = Time.current.strftime("%Y-%m-%d")
 
       month = Time.strptime("#{month}-01", "%Y-%m-%d") rescue Time.current
@@ -33,6 +35,17 @@ module Caim
       else
         OutputHelper.money_table moneys
       end
+
+      if options[:summary]
+        sum_payment = moneys
+          .select{|m|m["mode"] == "payment"}
+          .reduce(0) {|sum, val| sum + val["amount"].to_i}
+        sum_income = moneys
+          .select{|m|m["mode"] == "income"}
+          .reduce(0) {|sum, val| sum + val["amount"].to_i}
+        puts "payment: #{sum_payment}, income: #{sum_income}, sum: #{sum_income - sum_payment}"
+      end
+
     end
 
     desc 'pay', 'add payment'
