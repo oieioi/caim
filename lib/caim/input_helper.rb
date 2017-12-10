@@ -27,11 +27,31 @@ module Caim
     def get_account_id_interactively attrs, mode = nil
       accounts = Models::Account.all
       OutputHelper.account_table accounts
-      print "Input genre index:"
+      print "Input account index:"
       accounts[STDIN.gets.strip].try(:fetch, "id")
     end
-    alias :get_from_account_id_interactively :get_account_id_interactively 
-    alias :get_to_account_id_interactively   :get_account_id_interactively 
+    alias :get_from_account_id_interactively :get_account_id_interactively
+    alias :get_to_account_id_interactively   :get_account_id_interactively
+
+    def make_income_attrs raw = {}
+
+      category = Models::Category.all[raw[:category]]
+      if category.nil?
+        raise 'category not found'
+      end
+
+      account = Models::Account.all[raw[:account]]
+
+      {
+        id:            raw[:id] || nil,
+        category_id:   category["local_id"],
+        amount:        raw[:amount],
+        date:          raw[:date] || Time.new.strftime('%Y-%m-%d'),
+        to_account_id: account.try(:fetch, "id"),
+        comment:       raw[:comment],
+        place:         raw[:place],
+      }
+    end
 
     def make_payment_attrs raw = {}
 

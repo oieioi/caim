@@ -112,12 +112,13 @@ module Caim
     end
 
     private
+
     def create_money mode, options
       attrs  = options[:interactive] ?
         InputHelper.send("make_#{mode}_attrs_interactively", options) :
         InputHelper.send("make_#{mode}_attrs", options)
 
-      money = Models::Payment.new(attrs)
+      money = Models.module_eval(mode.to_s.classify).new(attrs)
 
       puts "You should create #{mode}:"
       OutputHelper.pretty_money money, padding: "    "
