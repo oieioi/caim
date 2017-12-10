@@ -79,7 +79,5 @@ module Caim
       })
     end
 
-    def table array, header
-    end
   end
 end

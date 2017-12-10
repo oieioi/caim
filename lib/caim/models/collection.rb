@@ -3,6 +3,7 @@ module Caim
     class Collection
       include Enumerable
 
+      attr_accessor :list
       def initialize list
         @list = list
         @list.each.with_index {|item, index|
