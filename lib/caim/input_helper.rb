@@ -2,15 +2,14 @@ module Caim
   module InputHelper
     extend self
 
-    def get_category_id_interactively attrs
-      p attrs
+    def get_category_id_interactively attrs, mode
       categories = Models::Category.all
-      OutputHelper.category_table categories.select{|c|c['mode'] == 'payment'}
+      OutputHelper.category_table categories.select{|c|c['mode'] == mode.to_s}
       print "Input category index:"
       categories[STDIN.gets.strip].try(:fetch, "local_id")
     end
 
-    def get_genre_id_interactively attrs
+    def get_genre_id_interactively attrs, mode = nil
       category_id = attrs[:category_id]
       categories = Models::Category.all
       genres = Models::Genre.all
@@ -25,14 +24,16 @@ module Caim
       genres[STDIN.gets.strip].try(:fetch, "id")
     end
 
-    def get_from_account_id_interactively attrs
+    def get_account_id_interactively attrs, mode = nil
       accounts = Models::Account.all
       OutputHelper.account_table accounts
       print "Input genre index:"
       accounts[STDIN.gets.strip].try(:fetch, "id")
     end
+    alias :get_from_account_id_interactively :get_account_id_interactively 
+    alias :get_to_account_id_interactively   :get_account_id_interactively 
 
-    def make_payment_attrs amount = 0, raw = {}
+    def make_payment_attrs raw = {}
 
       genre = Models::Genre.all[raw[:genre]]
       if genre.nil?
@@ -48,7 +49,7 @@ module Caim
 
       {
         id:              raw[:id] || nil,
-        amount:          amount,
+        amount:          raw[:amount],
         category_id:     category["local_id"],
         genre_id:        genre['id'],
         from_account_id: account.try(:fetch, "id"),
@@ -59,9 +60,18 @@ module Caim
       }
     end
 
-    def make_payment_attrs_interactively amount, raw = {}
-      attrs = raw.dup
-      %w(
+    def make_income_attrs_interactively raw = {}
+      make_attrs_interactively %w(
+        amount
+        category_id
+        to_account_id
+        date
+        comment
+        place), raw, :income
+    end
+
+    def make_payment_attrs_interactively raw = {}
+      make_attrs_interactively %w(
         amount
         category_id
         genre_id
@@ -69,23 +79,29 @@ module Caim
         date
         comment
         name
-        place).each {|name|
-          method = "get_#{name}_interactively"
-          attrs[name.to_sym] =  if self.respond_to? method
-            self.send method, attrs
-          else
-            print "Input #{name}:"
-            STDIN.gets.strip
-          end
-        }
-
-        attrs.transform_values(&:presence).compact.symbolize_keys
+        place), raw, :payment
     end
 
     def confirm selection = %w(yes no)
       print "Are your sure? #{selection.join('/')}:"
       yes = STDIN.gets.strip
       yes[0]
+    end
+
+    private
+    def make_attrs_interactively attr_names, raw, mode
+      attrs = raw.dup
+      attr_names.each {|name|
+        method = "get_#{name}_interactively"
+        attrs[name.to_sym] =
+          if self.respond_to? method
+            self.send method, attrs, mode
+          else
+            print "Input #{name}:"
+            STDIN.gets.strip
+          end
+      }
+      attrs.transform_values(&:presence).compact.symbolize_keys
     end
   end
 end

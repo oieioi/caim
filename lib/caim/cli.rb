@@ -45,26 +45,19 @@ module Caim
     option :yes,         aliases: :y, required: false, type: :boolean
     option :interactive, aliases: :i, required: false, type: :boolean
     def pay amount = nil
+      create_money :payment, options.merge(amount: amount)
+    end
 
-      attrs  = options[:interactive] ?
-        InputHelper.make_payment_attrs_interactively(amount, options) :
-        InputHelper.make_payment_attrs(amount, options)
-
-      money = Models::Payment.new(attrs)
-
-      puts 'You should pay payment:'
-      OutputHelper.pretty_money money, padding: "    "
-
-      if options[:yes].blank?
-        case InputHelper.confirm %w{yes no edit}
-        when 'n' then return
-        when 'e' then raise 'not implmented!'
-        end
-      end
-
-      id = money.save
-      puts "success! #{id}"
-
+    desc 'earn', 'add income'
+    option :category,    aliases: :ca, required: false
+    option :account,     aliases: :a, required: false
+    option :date,        aliases: :d, required: false
+    option :comment,     aliases: :co, required: false
+    option :place,       aliases: :p, required: false
+    option :yes,         aliases: :y, required: false, type: :boolean
+    option :interactive, aliases: :i, required: false, type: :boolean
+    def earn amount = nil
+      create_money :income, options.merge(amount: amount)
     end
 
     desc 'rm', 'remove money'
@@ -119,5 +112,25 @@ module Caim
     end
 
     private
+    def create_money mode, options
+      attrs  = options[:interactive] ?
+        InputHelper.send("make_#{mode}_attrs_interactively", options) :
+        InputHelper.send("make_#{mode}_attrs", options)
+
+      money = Models::Payment.new(attrs)
+
+      puts "You should create #{mode}:"
+      OutputHelper.pretty_money money, padding: "    "
+
+      if options[:yes].blank?
+        case InputHelper.confirm %w{yes no edit}
+        when 'n' then return
+        when 'e' then raise 'not implmented!'
+        end
+      end
+
+      id = money.save
+      puts "success! #{id}"
+    end
   end
 end

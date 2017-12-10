@@ -5,14 +5,16 @@ module Caim
     extend self
 
     def pretty_money money, opt = {padding: ""}
-      category = Models::Category.all.find {|item| item["local_id"] == money.category_id }
-      genre    = Models::Genre.all.find_by_id(money.genre_id)
-      account  = Models::Account.all.find_by_id(money.from_account_id)
+      category = Models::Category.all.find {|item| item["local_id"] == money.category_id } rescue nil
+      genre    = Models::Genre.all.find_by_id(money.genre_id) rescue nil
+      from_account  = Models::Account.all.find_by_id(money.from_account_id) rescue nil
+      to_account  = Models::Account.all.find_by_id(money.to_account_id) rescue nil
 
       puts money.to_h.merge({
         category: category.try(:fetch, "name"),
         genre: genre.try(:fetch, "name"),
-        from_account: account.try(:fetch, "name"),
+        from_account: from_account.try(:fetch, "name"),
+        to_account: to_account.try(:fetch, "name"),
       }).to_a.map{|item|
         key, value = item
         "#{opt[:padding]}#{key}: #{value}"
