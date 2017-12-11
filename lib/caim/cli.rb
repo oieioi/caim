@@ -89,8 +89,13 @@ module Caim
     desc 'category', 'show categories'
     option :income , aliases: :i, type: :boolean
     option :payment, aliases: :p, type: :boolean
-    def category
-      categories = Models::Category.all
+    def category sub_command = nil
+
+      categories = if sub_command == 'update'
+        Models::Category.all update: true
+      else
+        Models::Category.all
+      end
 
       if options[:income]
         categories = categories.select {|c| c["mode"] == "income" }

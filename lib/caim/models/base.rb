@@ -6,15 +6,16 @@ module Caim
         self::MODEL_KEY
       end
 
-      def self.all
-        all_with_key key
+      def self.all opt = {}
+        all_with_key key, opt
       end
 
       private
-      def self.all_with_key key
+      def self.all_with_key key, opt = {}
         key = key.to_s
         keys = key.pluralize
         cache = Cache.get(keys.to_sym)
+        cache = nil if opt[:update].present?
 
         if cache.blank?
           result = API.get "/v2/home/#{key}"
