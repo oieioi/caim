@@ -3,17 +3,21 @@ module Caim
     class Money < Model
       MODEL_KEY = :money
 
-      def self.where time:
-        url = "/v2/home/money?start_date=#{time.beginning_of_month.strftime("%Y-%m-%d")}&end_date=#{time.end_of_month.strftime("%Y-%m-%d")}"
-        result = API.get url
-        @@list = Collection.new result["money"]
+      def self.where param
+        param = param.dup
+
+        if param[:time].present?
+           param[:start_date] = param[:time].beginning_of_month.strftime("%Y-%m-%d")
+           param[:end_date] = param[:time].end_of_month.strftime("%Y-%m-%d")
+           param.delete :time
+        end
+
+        self.fetch param.to_param
       end
 
       # TODO: Models::base なんとかする
       def self.all
-        url = "/v2/home/money"
-        result = API.get url
-        @@list = Collection.new result["money"]
+        self.fetch
       end
 
       def self.attrs
@@ -75,6 +79,15 @@ module Caim
       def request_path
         @id.nil? ? "/v2/home/money/#{@mode.to_s}" : "/v2/home/money/#{@mode.to_s}/#{@id.to_s}"
       end
+
+      # TODO: Models::base なんとかする
+      def self.fetch query = nil
+        url = "/v2/home/money"
+        url << "?#{query}" if query.present?
+        result = API.get url
+        @@list = Collection.new result["money"]
+      end
+
     end
   end
 end
