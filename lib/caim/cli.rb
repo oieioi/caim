@@ -82,6 +82,7 @@ module Caim
         end
       end
 
+      # Payment, Income 関係なくmoney_idあってればリクエスト通る
       puts Models::Payment.new(id: money_id.to_i).destroy
     end
 
