@@ -21,7 +21,7 @@ module Caim
       }
 
       print "Input genre index:"
-      genres[STDIN.gets.strip].try(:fetch, "id")
+      genres[STDIN.gets.strip].try(:fetch, "local_id")
     end
 
     def get_account_id_interactively attrs, mode = nil

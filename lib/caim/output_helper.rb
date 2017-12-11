@@ -6,7 +6,7 @@ module Caim
 
     def pretty_money money, opt = {padding: ""}
       category = Models::Category.all.find {|item| item["local_id"] == money.category_id } rescue nil
-      genre    = Models::Genre.all.find_by_id(money.genre_id) rescue nil
+      genre    = Models::Genre.all.find {|item| item["local_id"] == money.genre_id } rescue nil
       from_account  = Models::Account.all.find_by_id(money.from_account_id) rescue nil
       to_account    = Models::Account.all.find_by_id(money.to_account_id) rescue nil
 
