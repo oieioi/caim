@@ -4,7 +4,11 @@ module Caim
 
     def get_category_id_interactively attrs, mode
       categories = Models::Category.all
-      OutputHelper.category_table categories.select{|c|c['mode'] == mode.to_s}
+      # TODO: ステータスをみるのはモデル側で吸収する
+      OutputHelper.category_table categories
+        .select{|c|c['active'] != -1}
+        .select{|c|c['mode'] == mode.to_s}
+        .sort{|a, b| a['sort'] <=> b['sort']}
       print "Input category index:"
       categories[STDIN.gets.strip].try(:fetch, "local_id")
     end
@@ -19,6 +23,8 @@ module Caim
       OutputHelper.genre_table genres.select {|g|
         g['category_id'] == parent["id"]
       }
+        .select{|c|c['active'] != -1}
+        .sort{|a, b| a['sort'] <=> b['sort']}
 
       print "Input genre index:"
       genres[STDIN.gets.strip].try(:fetch, "local_id")
