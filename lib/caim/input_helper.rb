@@ -89,9 +89,9 @@ module Caim
         amount
         category_id
         to_account_id
-        date
         comment
-        place), raw, :income
+        place
+        date), raw, :income
     end
 
     def make_payment_attrs_interactively raw = {}
@@ -100,10 +100,11 @@ module Caim
         category_id
         genre_id
         from_account_id
-        date
         comment
+        place
+        date
         name
-        place), raw, :payment
+        ), raw, :payment
     end
 
     def confirm selection = %w(yes no)
