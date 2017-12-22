@@ -3,10 +3,9 @@ module Caim
     extend self
 
     def get_category_id_interactively attrs, mode
-      categories = Models::Category.all
+      categories = Models::Category.active
       # TODO: ステータスをみるのはモデル側で吸収する
       OutputHelper.category_table categories
-        .select{|c|c['active'] != -1}
         .select{|c|c['mode'] == mode.to_s}
         .sort{|a, b| a['sort'] <=> b['sort']}
       print "Input category index:"
@@ -15,7 +14,7 @@ module Caim
 
     def get_genre_id_interactively attrs, mode = nil
       category_id = attrs[:category_id]
-      categories = Models::Category.all
+      categories = Models::Category.active
       genres = Models::Genre.all
 
       parent = categories.find {|c| c["local_id"] == category_id}
@@ -23,7 +22,6 @@ module Caim
       OutputHelper.genre_table genres.select {|g|
         g['category_id'] == parent["id"]
       }
-        .select{|c|c['active'] != -1}
         .sort{|a, b| a['sort'] <=> b['sort']}
 
       print "Input genre index:"
