@@ -10,10 +10,6 @@ module Caim
         all_with_key key, opt
       end
 
-      def self.active
-        all.select{|c|c['active'] != -1}
-      end
-
       private
       def self.all_with_key key, opt = {}
         key = key.to_s
