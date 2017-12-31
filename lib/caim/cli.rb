@@ -18,6 +18,7 @@ module Caim
     option :all,  aliases: :a, required: false, type: :boolean
     option :format,  aliases: :f, required: false
     option :summary,  aliases: :s, required: false, type: :boolean
+    option :'category-summary',  aliases: :c, required: false, type: :boolean
     def ls month = Time.current.strftime("%Y-%m-%d")
 
       month = Time.strptime("#{month}-01", "%Y-%m-%d") rescue Time.current
@@ -45,6 +46,29 @@ module Caim
         puts "payment: #{sum_payment.to_s :delimited}, income: #{sum_income.to_s :delimited}, sum: #{(sum_income - sum_payment).to_s :delimited}"
       end
 
+      if options['category-summary']
+        categories = Models::Category.all
+        by_category = moneys.group_by {|e| e['category_id']}
+        summaried = by_category.map { |category_id, moneys|
+          sum = moneys.reduce(0) {|sum, val| sum + val["amount"].to_i}
+          cate = categories.find_by_id(category_id)
+          {id: category_id, category: cate, summary: sum}
+        }
+        prettied = summaried.map {|item| [
+          item[:category].try(:[], 'name') || 'transfered',
+          item[:category].try(:[], 'mode') || 'transfered',
+          item[:summary]
+        ]}.sort {|a, b|
+          (b[1] <=> a[1]).nonzero? || b[2] <=> a[2]
+        }
+        puts ::Terminal::Table.new({
+          headings: %w{
+            name mode summary
+          },
+            rows: prettied
+        })
+
+      end
     end
 
     desc 'pay', 'add payment'

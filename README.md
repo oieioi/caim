@@ -28,6 +28,7 @@ Get list
     $ caim ls
     $ caim ls 2017-11
     $ caim ls --summary
+    $ caim ls --category-summary
     $ caim ls --format json
 
 Get accounts, categories and genres with index
