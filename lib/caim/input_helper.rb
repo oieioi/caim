@@ -77,7 +77,7 @@ module Caim
         id:              raw[:id] || nil,
         amount:          raw[:amount],
         category_id:     category["local_id"],
-        genre_id:        genre['id'],
+        genre_id:        genre['local_id'],
         from_account_id: account.try(:fetch, "id"),
         date:            raw[:date] || Time.new.strftime('%Y-%m-%d'),
         comment:         raw[:memo] ,
