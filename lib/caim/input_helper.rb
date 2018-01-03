@@ -27,7 +27,8 @@ module Caim
         .sort{|a, b| a['sort'] <=> b['sort']}
 
       print "Input genre index:"
-      genres[STDIN.gets.strip].try(:fetch, "local_id")
+      index = STDIN.gets.strip
+      genres[index]["local_id"] || genres[index]["id"]
     end
 
     def get_account_id_interactively attrs, mode = nil
