@@ -19,6 +19,7 @@ module Caim
     option :format,  aliases: :f, required: false
     option :summary,  aliases: :s, required: false, type: :boolean
     option :'category-summary',  aliases: :c, required: false, type: :boolean
+    option :'genre-summary',  aliases: :g, required: false, type: :boolean
     def ls month = Time.current.strftime("%Y-%m-%d")
 
       month = Time.strptime("#{month}-01", "%Y-%m-%d") rescue Time.current
@@ -46,7 +47,7 @@ module Caim
         puts "payment: #{sum_payment.to_s :delimited}, income: #{sum_income.to_s :delimited}, sum: #{(sum_income - sum_payment).to_s :delimited}"
       end
 
-      if options['category-summary']
+      if options['category-summary'] || options['genre-summary']
         categories = Models::Category.all
         genres = Models::Genre.all
 
@@ -70,10 +71,11 @@ module Caim
           prettied << [
             item[:category].try(:[], 'mode') || 'transfered',
             item[:category].try(:[], 'name') || 'transfered',
-            'summary----------',
+            'summary',
             item[:summary]
           ]
-          if item[:category].try(:[], 'mode') == 'payment'
+
+          if options['genre-summary'] && item[:category].try(:[], 'mode') == 'payment'
             item[:genres].each {|genre|
               prettied << [
                 item[:category].try(:[], 'mode') || 'transfered',
@@ -83,10 +85,14 @@ module Caim
               ]
             }
           end
+
         }
-        prettied = prettied.sort {|a, b|
-          (b[0] <=> a[0]).nonzero? || (b[1] <=> a[1]).nonzero? || (b[3] <=> a[3])
-        }
+        if options['category-summary']
+          prettied = prettied.sort {|a, b| (b[0] <=> a[0]).nonzero? || (b[3] <=> a[3]) }
+        elsif options['genre-summary']
+          prettied = prettied.sort {|a, b| (b[0] <=> a[0]).nonzero? || (b[1] <=> a[1]).nonzero? || (b[3] <=> a[3]) }
+        end
+
         puts ::Terminal::Table.new({
           headings: %w{
             mode category genre summary
