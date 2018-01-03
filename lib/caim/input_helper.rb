@@ -28,7 +28,7 @@ module Caim
 
       print "Input genre index:"
       index = STDIN.gets.strip
-      genres[index]["local_id"] || genres[index]["id"]
+      genres[index]["local_id"] || genres[index]["parent_genre_id"] || genres[index]["id"]
     end
 
     def get_account_id_interactively attrs, mode = nil
@@ -78,7 +78,7 @@ module Caim
         id:              raw[:id] || nil,
         amount:          raw[:amount],
         category_id:     category["local_id"],
-        genre_id:        genre['local_id'],
+        genre_id:        genre['local_id'] || genre['parent_genre_id'] || genre['id'],
         from_account_id: account.try(:fetch, "id"),
         date:            raw[:date] || Time.new.strftime('%Y-%m-%d'),
         comment:         raw[:memo] ,

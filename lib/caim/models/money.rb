@@ -57,7 +57,7 @@ module Caim
         if result["money"]
           @id = result["money"]["id"]
         else
-          raise "failed save"
+          raise "failed save:" + result['message']
         end
       end
 
