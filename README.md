@@ -70,11 +70,12 @@ Remove money
 
     $ caim rm money_id
 
+transfer money
+
+    $ caim mv 20000 --from-account from_account_index --to-account to_account_index
+    $ caim mv 20000 -i
+
 ## TODO
-
-transfer
-
-    $ caim mv 20000 from_account_id to_account_id
 
 Update money
 
