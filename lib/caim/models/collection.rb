@@ -16,6 +16,7 @@ module Caim
       end
 
       def find_by_id id
+        id = id.to_i
         @list.find {|item| item["id"] == id }
       end
 
