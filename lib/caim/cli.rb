@@ -128,6 +128,17 @@ module Caim
       create_money :income, options.merge(amount: amount)
     end
 
+    desc 'mv', 'transfer money'
+    option :date,        aliases: :d, required: false
+    option :'from-account',  aliases: :f, required: false
+    option :'to-account',  aliases: :t, required: false
+    option :memo,        aliases: :m, required: false
+    option :yes,         aliases: :y, required: false, type: :boolean
+    option :interactive, aliases: :i, required: false, type: :boolean
+    def mv amount = nil
+      create_money :transfer, options.merge(amount: amount)
+    end
+
     desc 'rm', 'remove money'
     option :force, aliases: :f, required: false, type: :boolean
     def rm money_id

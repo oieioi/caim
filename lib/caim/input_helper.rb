@@ -110,6 +110,15 @@ module Caim
         ), raw, :payment
     end
 
+    def make_transfer_attrs_interactively raw = {}
+      make_attrs_interactively %w(
+        amount
+        from_account_id
+        to_account_id
+        comment
+        date), raw, :income
+    end
+
     def confirm selection = %w(yes no)
       print "Are your sure? #{selection.join('/')}:"
       yes = STDIN.gets.strip

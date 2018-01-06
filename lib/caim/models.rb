@@ -6,6 +6,7 @@ require_relative 'models/category'
 require_relative 'models/money'
 require_relative 'models/payment'
 require_relative 'models/income'
+require_relative 'models/transfer'
 
 module Caim
   module Models
