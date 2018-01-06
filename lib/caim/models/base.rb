@@ -6,28 +6,27 @@ module Caim
         self::MODEL_KEY
       end
 
-      def self.all opt = {}
-        all_with_key key, opt
+      def initialize attrs = {}
+        @attrs = attrs
       end
 
-      private
-      def self.all_with_key key, opt = {}
+      def [] key
         key = key.to_s
-        keys = key.pluralize
-        cache = Cache.get(keys.to_sym)
-        cache = nil if opt[:update].present?
-
-        if cache.blank?
-          result = API.get "/v2/home/#{key}"
-          obj = {}
-          obj[keys.to_sym] = result[keys]
-          Cache.save obj
-          cache = Cache.get(keys.to_sym)
-        end
-
-        @@list = Collection.new cache
-        return @@list
+        @attrs[key]
       end
+
+      def id
+        self[:id]
+      end
+
+      def active?
+        self[:active].to_i != -1
+      end
+
+      def <=> other
+        self[:id] <=> other[:id]
+      end
+
     end
   end
 end

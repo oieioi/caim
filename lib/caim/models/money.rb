@@ -3,32 +3,8 @@ module Caim
     class Money < Model
       MODEL_KEY = :money
 
-      def self.where param
-        param = param.dup
-
-        if param[:time].present?
-           param[:start_date] = param[:time].beginning_of_month.strftime("%Y-%m-%d")
-           param[:end_date] = param[:time].end_of_month.strftime("%Y-%m-%d")
-           param.delete :time
-        end
-
-        self.fetch param.to_param
-      end
-
-      # TODO: Models::base なんとかする
-      def self.all
-        self.fetch
-      end
-
       def self.attrs
         raise 'not implemented'
-      end
-
-      def initialize mode, values
-        @mode = mode
-        self.class.attrs.each {|name|
-          self.send("#{name}=".to_sym, values[name])
-        }
       end
 
       def to_h
@@ -46,10 +22,6 @@ module Caim
           key, value = item
           "#{key}: #{value}"
         }.join("\n")
-      end
-
-      def fetch
-        raise 'not implemented'
       end
 
       def save
@@ -79,13 +51,32 @@ module Caim
       def request_path
         @id.nil? ? "/v2/home/money/#{@mode.to_s}" : "/v2/home/money/#{@mode.to_s}/#{@id.to_s}"
       end
+    end
 
-      # TODO: Models::base なんとかする
-      def self.fetch query = nil
-        url = "/v2/home/money"
-        url << "?#{query}" if query.present?
-        result = API.get url
-        @@list = Collection.new result["money"]
+    class Moneys < Collection
+
+      def model
+        Money
+      end
+
+      def where param
+        param = param.dup
+
+        if param[:time].present?
+           param[:start_date] = param[:time].beginning_of_month.strftime("%Y-%m-%d")
+           param[:end_date] = param[:time].end_of_month.strftime("%Y-%m-%d")
+           param.delete :time
+        end
+
+        fetch param.to_param
+      end
+
+      def fetch query = nil
+        queried = root_path
+        queried << "?#{query}" if query.present?
+        result = API.get queried
+        set_new_list result["money"]
+        self
       end
 
     end
