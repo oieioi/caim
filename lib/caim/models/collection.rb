@@ -7,34 +7,36 @@ module Caim
       def initialize opt = {}
         opt = {fetch: true}.merge opt
 
-        @Model = model
         @list = []
         fetch if opt[:fetch].present?
         self
       end
 
-      def model
+      def model_class
         raise 'not implemnted!'
       end
 
-      def key
-        @Model::MODEL_KEY.to_s
+      def resource_name
+        model_class.resource_name
       end
 
-      def root_path
-        "/v2/home/#{key}"
+      def resource_names
+        resource_name.pluralize
+      end
+
+      def path
+        "/v2/home/#{resource_name}"
       end
 
       def fetch
-        keys = key.pluralize
-        cache = Cache.get(keys.to_sym)
+        cache = Cache.get(resource_names.to_sym)
 
         if cache.blank?
-          result = API.get root_path
+          result = API.get path
           obj = {}
-          obj[keys.to_sym] = result[keys]
+          obj[resource_names.to_sym] = result[resource_names]
           Cache.save obj
-          cache = Cache.get(keys.to_sym)
+          cache = Cache.get(resource_names.to_sym)
         end
 
         set_new_list cache
@@ -45,9 +47,9 @@ module Caim
         @list.each {|item| yield item if item.active?}
       end
 
-      def find_by_id id
+      def find_by name, id
         id = id.to_i
-        @list.find {|item| item["id"] == id }
+        @list.find {|item| item.send(name.to_sym) == id }
       end
 
       def [] index
@@ -55,7 +57,11 @@ module Caim
           index = var2num(index)
           @list[index]
         else
-          find_by_id index
+          by_id = find_by :id, index
+          return by_id if by_id.present?
+
+          by_local_id = find_by :local_id, index
+          return by_local_id if by_local_id.present?
         end
       end
 
@@ -83,7 +89,7 @@ module Caim
       def set_new_list list
         @list = list.map.with_index {|raw_model, index|
           raw_model['index'] = num2var index
-          model.new raw_model
+          model_class.new raw_model
         }
       end
     end

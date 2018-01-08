@@ -11,10 +11,9 @@ module Caim
           :comment,
         ]
       end
-      attr_accessor(*self.attrs)
 
       def initialize values
-        super :transfer, values
+        super values, :transfer
       end
     end
   end

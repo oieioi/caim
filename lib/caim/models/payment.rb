@@ -14,10 +14,9 @@ module Caim
           :name
         ]
       end
-      attr_accessor(*self.attrs)
 
       def initialize values
-        super :payment, values
+        super values, :payment
       end
     end
   end

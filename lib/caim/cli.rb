@@ -55,10 +55,10 @@ module Caim
 
         summaried_by_category = by_category.map { |category_id, c_moneys|
           summary_category = c_moneys.reduce(0) {|s, v| s + v[:amount].to_i}
-          category = categories.find_by_id(category_id)
+          category = categories[category_id]
 
           by_genre = c_moneys.group_by{|m|m[:genre_id]}.map {|genre_id, g_moneys|
-            genre = genres.find_by_id(genre_id)
+            genre = genres[genre_id]
             summary_genre = g_moneys.reduce(0) {|s, v| s + v[:amount].to_i}
             {genre: genre, sum: summary_genre}
           }

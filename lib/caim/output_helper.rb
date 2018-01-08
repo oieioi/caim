@@ -5,17 +5,17 @@ module Caim
     extend self
 
     def pretty_money money, opt = {padding: ""}
-      category = Models::Categories.new.find {|item| item["local_id"] == money.category_id } rescue nil
-      genre    = Models::Genres.new.find {|item| item["local_id"] == money.genre_id } rescue nil
+      category = Models::Categories.new[money[:category_id]] rescue nil
+      genre    = Models::Genres.new[money[:genre_id]] rescue nil
       accounts = Models::Accounts.new
-      from_account  = accounts[money.from_account_id] rescue nil
-      to_account    = accounts[money.to_account_id] rescue nil
+      from_account  = accounts[money[:from_account_id]] rescue nil
+      to_account    = accounts[money[:to_account_id]] rescue nil
 
       target = money.to_h.merge({
-        category: category.try(:fetch, "name"),
-        genre: genre.try(:fetch, "name"),
-        from_account: from_account.try(:fetch, "name"),
-        to_account: to_account.try(:fetch, "name"),
+        category: category[:name],
+        genre: genre.try(:[], :name),
+        from_account: from_account.try(:[], :name),
+        to_account: to_account.try(:[], :name),
       })
 
       puts ::Terminal::Table.new({
@@ -40,17 +40,16 @@ module Caim
 
     def genre_table genres
       categories = Models::Categories.new
-      categories.fetch
       puts ::Terminal::Table.new({
         headings: %w{index category name},
         rows: genres
-          .map {|c|
-          category = categories[c[:category_id]]
-          [
-            c[:index],
-            category[:name],
-            c[:name]
-          ]
+          .map {|g|
+            category = categories[g[:category_id]]
+            [
+              g[:index],
+              category[:name],
+              g[:name]
+            ]
         }
       })
     end
