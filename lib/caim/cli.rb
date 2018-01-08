@@ -24,11 +24,11 @@ module Caim
 
       month = Time.strptime("#{month}-01", "%Y-%m-%d") rescue Time.current
       if options[:all].present?
-        moneys = Models::Money.all
+        moneys = Models::Moneys.new
       else
-        moneys = Models::Money.where time: month
+        moneys = Models::Moneys.new fetch: false
+        moneys.where time: month
       end
-
       if options[:format] == 'raw'
         p moneys
       elsif options[:format] == 'json'
@@ -48,18 +48,18 @@ module Caim
       end
 
       if options['category-summary'] || options['genre-summary']
-        categories = Models::Category.all
-        genres = Models::Genre.all
+        categories = Models::Categories.new
+        genres = Models::Genres.new
 
-        by_category = moneys.group_by {|e| e['category_id']}
+        by_category = moneys.group_by {|e| e[:category_id]}
 
         summaried_by_category = by_category.map { |category_id, c_moneys|
-          summary_category = c_moneys.reduce(0) {|s, v| s + v["amount"].to_i}
-          category = categories.find_by_id(category_id)
+          summary_category = c_moneys.reduce(0) {|s, v| s + v[:amount].to_i}
+          category = categories[category_id]
 
-          by_genre = c_moneys.group_by{|m|m['genre_id']}.map {|genre_id, g_moneys|
-            genre = genres.find_by_id(genre_id)
-            summary_genre = g_moneys.reduce(0) {|s, v| s + v["amount"].to_i}
+          by_genre = c_moneys.group_by{|m|m[:genre_id]}.map {|genre_id, g_moneys|
+            genre = genres[genre_id]
+            summary_genre = g_moneys.reduce(0) {|s, v| s + v[:amount].to_i}
             {genre: genre, sum: summary_genre}
           }
 
@@ -158,42 +158,37 @@ module Caim
     option :payment, aliases: :p, type: :boolean
     def category sub_command = nil
 
-      categories = if sub_command == 'update'
-        Models::Category.all update: true
-      else
-        Models::Category.all
-      end
+      categories = Models::Categories.new
 
       if options[:income]
-        categories = categories.select {|c| c["mode"] == "income" }
+        categories = categories.select {|c| c[:mode] == "income" }
       end
+
       if options[:payment]
-        categories = categories.select {|c| c["mode"] == "payment" }
+        categories = categories.select {|c| c[:mode] == "payment" }
       end
 
-      activated = categories.select{|c|c["active"] != -1}
+      categories.sort!
 
-      OutputHelper.category_table activated
+      OutputHelper.category_table categories
     end
 
     desc 'genre', 'show genre'
     def genre category_id = nil
-      genres = Models::Genre.all
+      genres = Models::Genres.new
 
       if category_id.present?
-        genres = genres.select {|g| g["category_id"] == category_id.to_i}
+        genres = genres.select {|g| g[:category_id] == category_id.to_i}
       end
 
-      activated = genres
-        .select{|c|c["active"] != -1}
-        .sort{|f, s| s[1] <=> f[1]}
-
-      OutputHelper.genre_table activated
+      genres = genres.sort
+      OutputHelper.genre_table genres
     end
 
     desc 'account', 'show accounts'
     def account
-      OutputHelper.account_table Models::Account.all
+      accounts = Models::Accounts.new
+      OutputHelper.account_table accounts
     end
 
     private

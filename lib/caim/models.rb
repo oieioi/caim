@@ -1,4 +1,4 @@
-require_relative 'models/base'
+require_relative 'models/model'
 require_relative 'models/collection'
 require_relative 'models/account'
 require_relative 'models/genre'

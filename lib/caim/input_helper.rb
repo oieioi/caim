@@ -3,58 +3,53 @@ module Caim
     extend self
 
     def get_category_id_interactively attrs, mode
-      categories = Models::Category.all
-      # TODO: ステータスをみるのはモデル側で吸収する
+      categories = Models::Categories.new
       OutputHelper.category_table categories
-        .select{|c|c['active'] != -1}
-        .select{|c|c['mode'] == mode.to_s}
-        .sort{|a, b| a['sort'] <=> b['sort']}
+        .select{|c|c[:mode] == mode.to_s}.sort
       print "Input category index:"
-      categories[STDIN.gets.strip].try(:fetch, "local_id")
+      categories[STDIN.gets.strip].local_id
     end
 
     def get_genre_id_interactively attrs, mode = nil
       category_id = attrs[:category_id]
-      categories = Models::Category.all
-      genres = Models::Genre.all
+      categories = Models::Categories.new
+      genres = Models::Genres.new
 
-      parent = categories.find {|c| c["local_id"] == category_id}
+      parent_category = categories.find {|c| c.local_id == category_id}
 
-      OutputHelper.genre_table genres.select {|g|
-        g['category_id'] == parent["id"]
-      }
-        .select{|c|c['active'] != -1}
-        .sort{|a, b| a['sort'] <=> b['sort']}
+      OutputHelper.genre_table genres
+        .select {|g| g[:category_id] == parent_category[:id]}
+        .sort
 
       print "Input genre index:"
       index = STDIN.gets.strip
-      genres[index]["local_id"] || genres[index]["parent_genre_id"] || genres[index]["id"]
+      genres[index].local_id
     end
 
     def get_account_id_interactively attrs, mode = nil
-      accounts = Models::Account.all
+      accounts = Models::Accounts.new
       OutputHelper.account_table accounts
       print "Input account index:"
-      accounts[STDIN.gets.strip].try(:fetch, "id")
+      accounts[STDIN.gets.strip].id
     end
     alias :get_from_account_id_interactively :get_account_id_interactively
     alias :get_to_account_id_interactively   :get_account_id_interactively
 
     def make_income_attrs raw = {}
 
-      category = Models::Category.all[raw[:category]]
+      category = Models::Categories.new[raw[:category]]
       if category.nil?
         raise 'category not found'
       end
 
-      account = Models::Account.all[raw[:account]]
+      account = Models::Accounts.new[raw[:account]]
 
       {
         id:            raw[:id] || nil,
-        category_id:   category["local_id"],
+        category_id:   category.id,
         amount:        raw[:amount],
         date:          raw[:date] || Time.new.strftime('%Y-%m-%d'),
-        to_account_id: account.try(:fetch, "id"),
+        to_account_id: account.try(:id),
         comment:       raw[:memo],
         place:         raw[:place],
       }
@@ -62,24 +57,24 @@ module Caim
 
     def make_payment_attrs raw = {}
 
-      genre = Models::Genre.all[raw[:genre]]
+      genre = Models::Genres.new[raw[:genre]]
       if genre.nil?
         raise 'genre not found'
       end
 
-      category = Models::Category.all[genre["category_id"]]
+      category = Models::Categories.new[genre[:category_id]]
       if category.nil?
         raise 'category not found'
       end
 
-      account = Models::Account.all[raw[:account]]
+      account = Models::Accounts.new[raw[:account]]
 
       {
         id:              raw[:id] || nil,
         amount:          raw[:amount],
-        category_id:     category["local_id"],
-        genre_id:        genre['local_id'] || genre['parent_genre_id'] || genre['id'],
-        from_account_id: account.try(:fetch, "id"),
+        category_id:     category.local_id,
+        genre_id:        genre.local_id,
+        from_account_id: account.id,
         date:            raw[:date] || Time.new.strftime('%Y-%m-%d'),
         comment:         raw[:memo] ,
         name:            raw[:name] ,

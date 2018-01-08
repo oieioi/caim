@@ -12,10 +12,9 @@ module Caim
           :comment,
         ]
       end
-      attr_accessor(*self.attrs)
 
       def initialize values
-        super :income, values
+        super values, :income
       end
     end
   end
