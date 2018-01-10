@@ -32,7 +32,7 @@ module Caim
       if options[:format] == 'raw'
         p moneys
       elsif options[:format] == 'json'
-        puts JSON.dump moneys.list
+        puts JSON.dump moneys.map(&:to_h)
       else
         OutputHelper.money_table moneys
       end

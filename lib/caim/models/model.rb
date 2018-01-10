@@ -44,7 +44,11 @@ module Caim
 
       def to_h
         result = { mapping: 1 }
-        self.class.attrs.each{|name| result[name] = self[name] }
+        begin
+          self.class.attrs.each{|name| result[name] = self[name] }
+        rescue
+          @attrs.each{|name, val| result[name] = val}
+        end
         result
       end
 
