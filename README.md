@@ -27,10 +27,12 @@ Get list
 
     $ caim ls
     $ caim ls 2017-11
-    $ caim ls --summary
-    $ caim ls --category-summary
-    $ caim ls --genre-summary
     $ caim ls --format json
+
+Get summary
+
+    $ caim sum --category-summary
+    $ caim sum --genre-summary
 
 Get accounts, categories and genres with index
 
@@ -88,11 +90,6 @@ filter list
 format CSV
 
     $ caim ls --all --format csv
-
-summary
-
-    $ caim sum 2017-11
-    $ caim sum 2017-11 食費
 
 Update master data
 

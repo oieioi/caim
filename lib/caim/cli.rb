@@ -36,18 +36,30 @@ module Caim
       else
         OutputHelper.money_table moneys
       end
+    end
 
-      if options[:summary]
-        sum_payment = moneys
-          .select{|m|m["mode"] == "payment"}
-          .reduce(0) {|sum, val| sum + val["amount"].to_i}
-        sum_income = moneys
-          .select{|m|m["mode"] == "income"}
-          .reduce(0) {|sum, val| sum + val["amount"].to_i}
-        puts "payment: #{sum_payment.to_s :delimited}, income: #{sum_income.to_s :delimited}, sum: #{(sum_income - sum_payment).to_s :delimited}"
+    desc "sum", "summary zaim"
+    option :all, aliases: :a, required: false, type: :boolean
+    option :category, aliases: :c, required: false, type: :boolean
+    option :genre, aliases: :g, required: false, type: :boolean
+    def sum month = Time.current.strftime("%Y-%m-%d")
+      month = Time.strptime("#{month}-01", "%Y-%m-%d") rescue Time.current
+      if options[:all].present?
+        moneys = Models::Moneys.new
+      else
+        moneys = Models::Moneys.new fetch: false
+        moneys.where time: month
       end
+ 
+      sum_payment = moneys
+        .select{|m|m["mode"] == "payment"}
+        .reduce(0) {|sum, val| sum + val["amount"].to_i}
+      sum_income = moneys
+        .select{|m|m["mode"] == "income"}
+        .reduce(0) {|sum, val| sum + val["amount"].to_i}
+      puts "payment: #{sum_payment.to_s :delimited}, income: #{sum_income.to_s :delimited}, sum: #{(sum_income - sum_payment).to_s :delimited}"
 
-      if options['category-summary'] || options['genre-summary']
+      if options['category'] || options['genre']
         categories = Models::Categories.new
         genres = Models::Genres.new
 
@@ -75,7 +87,7 @@ module Caim
             item[:summary]
           ]
 
-          if options['genre-summary'] && item[:category].try(:[], 'mode') == 'payment'
+          if options['genre'] && item[:category].try(:[], 'mode') == 'payment'
             item[:genres].each {|genre|
               prettied << [
                 item[:category].try(:[], 'mode') || 'transfered',
@@ -85,11 +97,11 @@ module Caim
               ]
             }
           end
-
         }
-        if options['category-summary']
+
+        if options['category']
           prettied = prettied.sort {|a, b| (b[0] <=> a[0]).nonzero? || (b[3] <=> a[3]) }
-        elsif options['genre-summary']
+        elsif options['genre']
           prettied = prettied.sort {|a, b| (b[0] <=> a[0]).nonzero? || (b[1] <=> a[1]).nonzero? || (b[3] <=> a[3]) }
         end
 
