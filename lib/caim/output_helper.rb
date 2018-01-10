@@ -12,7 +12,7 @@ module Caim
       to_account    = accounts[money[:to_account_id]] rescue nil
 
       target = money.to_h.merge({
-        category: category[:name],
+        category: category.try(:[], :name),
         genre: genre.try(:[], :name),
         from_account: from_account.try(:[], :name),
         to_account: to_account.try(:[], :name),

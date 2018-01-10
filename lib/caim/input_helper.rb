@@ -51,7 +51,6 @@ module Caim
         date:          raw[:date] || Time.new.strftime('%Y-%m-%d'),
         to_account_id: account.try(:id),
         comment:       raw[:memo],
-        place:         raw[:place],
       }
     end
 
@@ -81,6 +80,28 @@ module Caim
         place:           raw[:place] ,
       }
     end
+
+    def make_transfer_attrs raw = {}
+
+      accounts = Models::Accounts.new
+      from = accounts[raw[:'from-account']]
+      to   = accounts[raw[:'to-account']]
+
+      if from.blank? || to.blank?
+        raise 'account not found'
+      end
+
+      {
+        id:            raw[:id] || nil,
+        amount:          raw[:amount],
+        to_account_id: to.try(:id),
+        from_account_id: from.try(:id),
+        date:          raw[:date] || Time.new.strftime('%Y-%m-%d'),
+        comment:       raw[:memo],
+      }
+    end
+
+
 
     def make_income_attrs_interactively raw = {}
       make_attrs_interactively %w(
