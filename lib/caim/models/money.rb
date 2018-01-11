@@ -49,6 +49,22 @@ module Caim
         self
       end
 
+      def summary
+        sum_payment = self
+          .select{|m|m[:mode] == "payment"}
+          .reduce(0) {|sum, val| sum + val[:amount].to_i}
+
+        sum_income = moneys
+          .select{|m|m[:mode] == "income"}
+          .reduce(0) {|sum, val| sum + val[:amount].to_i}
+
+        {
+          payment: sum_payment.to_s(:delimited),
+          income: sum_income.to_s(:delimited),
+          sum: (sum_income - sum_payment).to_s(:delimited)
+        }
+      end
+
     end
   end
 end
