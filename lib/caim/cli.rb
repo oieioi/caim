@@ -18,9 +18,6 @@ module Caim
     desc "ls", "list zaim"
     option :all,  aliases: :a, required: false, type: :boolean
     option :format,  aliases: :f, required: false
-    option :summary,  aliases: :s, required: false, type: :boolean
-    option :'category-summary',  aliases: :c, required: false, type: :boolean
-    option :'genre-summary',  aliases: :g, required: false, type: :boolean
     def ls month = Time.current.strftime("%Y-%m-%d")
 
       month = Time.strptime("#{month}-01", "%Y-%m-%d") rescue Time.current
