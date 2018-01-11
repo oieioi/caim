@@ -30,13 +30,8 @@ module Caim
         moneys = Models::Moneys.new fetch: false
         moneys.where time: month
       end
-      if options[:format] == 'raw'
-        p moneys
-      elsif options[:format] == 'json'
-        puts JSON.dump moneys.map(&:to_h)
-      else
-        OutputHelper.money_table moneys
-      end
+
+      MoneyHelper.pretty_moneys moneys, format: options[:format]
     end
 
     desc "sum", "summary zaim"
@@ -51,14 +46,8 @@ module Caim
         moneys = Models::Moneys.new fetch: false
         moneys.where time: month
       end
- 
-      sum_payment = moneys
-        .select{|m|m["mode"] == "payment"}
-        .reduce(0) {|sum, val| sum + val["amount"].to_i}
-      sum_income = moneys
-        .select{|m|m["mode"] == "income"}
-        .reduce(0) {|sum, val| sum + val["amount"].to_i}
-      puts "payment: #{sum_payment.to_s :delimited}, income: #{sum_income.to_s :delimited}, sum: #{(sum_income - sum_payment).to_s :delimited}"
+
+      p moneys.summary
 
       if options['category'] || options['genre']
         categories = Models::Categories.new
@@ -214,7 +203,7 @@ module Caim
       money = Models.module_eval(mode.to_s.classify).new(attrs)
 
       puts "You should create #{mode}:"
-      OutputHelper.pretty_money money, padding: "    "
+      MoneyHelper.pretty_money money, padding: "    "
 
       if options[:yes].blank?
         case InputHelper.confirm %w{yes no edit}
