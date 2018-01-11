@@ -8,6 +8,7 @@ require 'terminal-table'
 
 module Caim
   class CLI < Thor
+    include ::Caim::Helpers
 
     desc "login", "login"
     def login
