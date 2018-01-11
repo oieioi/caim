@@ -50,19 +50,101 @@ module Caim
       end
 
       def summary
-        sum_payment = self
-          .select{|m|m[:mode] == "payment"}
-          .reduce(0) {|sum, val| sum + val[:amount].to_i}
+        sum_payment = payments.reduce(0) {|sum, val| sum + val[:amount].to_i}
 
-        sum_income = moneys
-          .select{|m|m[:mode] == "income"}
-          .reduce(0) {|sum, val| sum + val[:amount].to_i}
+        sum_income = incomes.reduce(0) {|sum, val| sum + val[:amount].to_i}
 
         {
-          payment: sum_payment.to_s(:delimited),
           income: sum_income.to_s(:delimited),
-          sum: (sum_income - sum_payment).to_s(:delimited)
+          payment: sum_payment.to_s(:delimited),
+          "income - payment": (sum_income - sum_payment).to_s(:delimited)
         }
+      end
+
+      def payments
+        select{|m|m[:mode] == "payment"}
+      end
+
+      def incomes
+        select{|m|m[:mode] == "income"}
+      end
+
+      def summary_by_category categories
+        by_category = self.group_by {|e| e[:category_id]}
+
+        summaried_by_category = by_category.map { |category_id, c_moneys|
+          summary_category = c_moneys.reduce(0) {|s, v| s + v[:amount].to_i}
+          category = categories[category_id]
+          {id: category_id, category: category, summary: summary_category}
+        }
+
+        prettied = []
+        summaried_by_category.each {|item|
+          prettied << [
+            item[:category].try(:[], 'mode') || 'transfered',
+            item[:category].try(:[], 'name') || 'transfered',
+            item[:summary]
+          ]
+        }
+
+        prettied = prettied.sort {|a, b| (b[0] <=> a[0]).nonzero? || (b[2] <=> a[2]) }
+
+        # 返り値が雑
+        ::Terminal::Table.new({
+          headings: %w{
+            mode category summary
+          },
+            rows: prettied
+        })
+      end
+
+      # TODO 汚い
+      def summary_by_genre categories, genres
+        by_category = self.group_by {|e| e[:category_id]}
+        summaried_by_category = by_category.map { |category_id, c_moneys|
+          summary_category = c_moneys.reduce(0) {|s, v| s + v[:amount].to_i}
+          category = categories[category_id]
+
+          by_genre = c_moneys.group_by{|m|m[:genre_id]}.map {|genre_id, g_moneys|
+            genre = genres[genre_id]
+            summary_genre = g_moneys.reduce(0) {|s, v| s + v[:amount].to_i}
+            {genre: genre, sum: summary_genre}
+          }
+
+          {id: category_id, category: category, summary: summary_category, genres: by_genre}
+        }
+
+        prettied = []
+        summaried_by_category.each {|item|
+          prettied << [
+            item[:category].try(:[], 'mode') || 'transfered',
+            item[:category].try(:[], 'name') || 'transfered',
+            'summary',
+            item[:summary]
+          ]
+
+          if item[:category].try(:[], 'mode') == 'payment'
+            item[:genres].each {|genre|
+              prettied << [
+                item[:category].try(:[], 'mode') || 'transfered',
+                item[:category].try(:[], 'name') || 'transfered',
+                genre[:genre].try(:[], 'name'),
+                genre[:sum]
+              ]
+            }
+          end
+        }
+
+        prettied = prettied.sort {|a, b| (b[0] <=> a[0]).nonzero? || (b[1] <=> a[1]).nonzero? || (b[3] <=> a[3]) }
+
+        ::Terminal::Table.new({
+          headings: %w{
+            mode category genre summary
+          },
+            rows: prettied
+        })
+
+
       end
 
     end

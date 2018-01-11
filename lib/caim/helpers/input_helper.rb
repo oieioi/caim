@@ -5,8 +5,9 @@ module Caim
 
       def get_category_id_interactively attrs, mode
         categories = Models::Categories.new
-        OutputHelper.category_table categories
+        puts CategoryHelper.table categories
           .select{|c|c[:mode] == mode.to_s}.sort
+
         print "Input category index:"
         categories[STDIN.gets.strip].local_id
       end
