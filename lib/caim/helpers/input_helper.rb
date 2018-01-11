@@ -19,7 +19,7 @@ module Caim
 
         parent_category = categories.find {|c| c.local_id == category_id}
 
-        OutputHelper.genre_table genres
+        puts GenreHelper.table genres
           .select {|g| g[:category_id] == parent_category[:id]}
           .sort
 
@@ -30,7 +30,7 @@ module Caim
 
       def get_account_id_interactively attrs, mode = nil
         accounts = Models::Accounts.new
-        OutputHelper.account_table accounts
+        puts AccountHelper.table accounts
         print "Input account index:"
         accounts[STDIN.gets.strip].id
       end
