@@ -21,7 +21,7 @@ module Caim
           to_account: to_account.try(:[], :name),
         })
 
-        puts ::Terminal::Table.new({
+        ::Terminal::Table.new({
           headings: %w{name value},
           rows: target.to_a
         })
@@ -29,7 +29,7 @@ module Caim
 
       def pretty_moneys moneys, format:
         format = :table if format.nil?
-        puts send("#{format.to_s}_format", moneys)
+        send("#{format.to_s}_format", moneys)
       end
 
       private

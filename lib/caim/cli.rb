@@ -28,7 +28,7 @@ module Caim
         moneys.where time: month
       end
 
-      MoneyHelper.pretty_moneys moneys, format: options[:format]
+      puts MoneyHelper.pretty_moneys moneys, format: options[:format]
     end
 
     desc "sum", "summary zaim"
@@ -137,13 +137,13 @@ module Caim
       end
 
       genres = genres.sort
-      OutputHelper.genre_table genres
+      puts GenreHelper.table genres
     end
 
     desc 'account', 'show accounts'
     def account
       accounts = Models::Accounts.new
-      OutputHelper.account_table accounts
+      puts AccountHelper.table accounts
     end
 
     private
@@ -156,7 +156,7 @@ module Caim
       money = Models.module_eval(mode.to_s.classify).new(attrs)
 
       puts "You should create #{mode}:"
-      MoneyHelper.pretty_money money, padding: "    "
+      puts MoneyHelper.pretty_money money, padding: "    "
 
       if options[:yes].blank?
         case InputHelper.confirm %w{yes no edit}
