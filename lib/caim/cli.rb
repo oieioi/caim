@@ -20,11 +20,11 @@ module Caim
     option :format,  aliases: :f, required: false
     def ls month = Time.current.strftime("%Y-%m-%d")
 
-      month = Time.strptime("#{month}-01", "%Y-%m-%d") rescue Time.current
+      moneys = Models::Moneys.new fetch: false
       if options[:all].present?
-        moneys = Models::Moneys.new
+        moneys.fetch
       else
-        moneys = Models::Moneys.new fetch: false
+        month = Time.strptime("#{month}-01", "%Y-%m-%d") rescue Time.current
         moneys.where time: month
       end
 
@@ -36,11 +36,12 @@ module Caim
     option :category, aliases: :c, required: false, type: :boolean
     option :genre, aliases: :g, required: false, type: :boolean
     def sum month = Time.current.strftime("%Y-%m-%d")
-      month = Time.strptime("#{month}-01", "%Y-%m-%d") rescue Time.current
+      moneys = Models::Moneys.new fetch: false
+
       if options[:all].present?
-        moneys = Models::Moneys.new
+        moneys.fetch
       else
-        moneys = Models::Moneys.new fetch: false
+        month = Time.strptime("#{month}-01", "%Y-%m-%d") rescue Time.current
         moneys.where time: month
       end
 
