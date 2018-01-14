@@ -7,8 +7,8 @@ module Caim
 
       def table categories
         ::Terminal::Table.new({
-          headings: %w{index id mode name},
-          rows: categories.map {|c|[c[:index], c[:id], c[:mode], c[:name]]}
+          headings: %w{index mode name},
+          rows: categories.map {|c|[c[:index], c[:mode], c[:name]]}
         })
       end
 

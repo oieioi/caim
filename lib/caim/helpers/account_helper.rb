@@ -7,8 +7,8 @@ module Caim
 
       def table accounts
         ::Terminal::Table.new({
-          headings: %w{index id name},
-          rows: accounts.map {|c| [ c[:index], c[:id], c[:name]]}
+          headings: %w{index name},
+          rows: accounts.map {|c| [ c[:index], c[:name]]}
         })
       end
     end
