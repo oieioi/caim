@@ -80,13 +80,26 @@ module Caim
             from_account_id
             category_id
             genre_id
-            note
+            comment
             place
           }
         end
-        CSV.generate(attr_names.join(',')) {|csv|
-          moneys.each {|money|
-            csv << attr_names.map {|name| money[name]}
+        accounts = Models::Accounts.new
+        genres = Models::Genres.new
+        categories = Models::Categories.new
+
+        CSV.generate {|csv|
+          csv << attr_names
+          moneys.reverse_each {|money|
+            csv << attr_names.map {|key|
+              case key
+              when 'to_account_id' then accounts[money[key]].try(:[], :name)
+              when 'from_account_id' then accounts[money[key]].try(:[], :name)
+              when 'genre_id' then genres[money[key]].try(:[], :name)
+              when 'category_id' then categories[money[key]].try(:[], :name)
+              else money[key]
+              end
+            }
           }
         }
       end
