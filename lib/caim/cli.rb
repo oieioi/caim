@@ -16,8 +16,8 @@ module Caim
     end
 
     desc "ls", "list zaim"
-    option :all,  aliases: :a, required: false, type: :boolean
-    option :format,  aliases: :f, required: false
+    option :all,  aliases: :a, required: false, type: :boolean, desc: 'show all money'
+    option :format,  aliases: :f, required: false, desc: ''
     def ls month = Time.current.strftime("%Y-%m-%d")
 
       moneys = Models::Moneys.new fetch: false
