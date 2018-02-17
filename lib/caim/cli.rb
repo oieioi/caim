@@ -23,10 +23,10 @@ module Caim
 
       moneys = Models::Moneys.new fetch: false
       if options[:all].present?
-        moneys.fetch order: options[:sort] || 'date'
+        moneys.fetch order: options[:order] || 'date'
       else
         month = Time.strptime("#{month}-01", "%Y-%m-%d") rescue Time.current
-        moneys.where time: month, order: options[:sort] || 'date'
+        moneys.where time: month, order: options[:order] || 'date'
       end
 
       puts MoneyHelper.pretty_moneys moneys, format: options[:format]
