@@ -42,6 +42,9 @@ module Caim
       end
 
       def fetch query = nil
+        if query.is_a? Hash
+          query = query.to_param
+        end
         queried = path
         queried << "?#{query}" if query.present?
         result = API.get queried

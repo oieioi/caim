@@ -17,15 +17,16 @@ module Caim
 
     desc "ls", "list zaim"
     option :all,  aliases: :a, required: false, type: :boolean, desc: 'show all money'
+    option :order,  aliases: :o, required: false, desc: 'sort by id, date'
     option :format,  aliases: :f, required: false, desc: ''
     def ls month = Time.current.strftime("%Y-%m-%d")
 
       moneys = Models::Moneys.new fetch: false
       if options[:all].present?
-        moneys.fetch
+        moneys.fetch order: options[:sort] || 'date'
       else
         month = Time.strptime("#{month}-01", "%Y-%m-%d") rescue Time.current
-        moneys.where time: month
+        moneys.where time: month, order: options[:sort] || 'date'
       end
 
       puts MoneyHelper.pretty_moneys moneys, format: options[:format]
