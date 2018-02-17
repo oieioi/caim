@@ -138,7 +138,7 @@ module Caim
       end
 
       def confirm selection = %w(yes no)
-        print "Are your sure? #{selection.join('/')}:"
+        print "Are you sure? #{selection.join('/')}:"
         yes = STDIN.gets.strip
         yes[0]
       end

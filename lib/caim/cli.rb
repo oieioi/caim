@@ -100,7 +100,7 @@ module Caim
     option :force, aliases: :f, required: false, type: :boolean
     def rm money_id
       if options[:force].blank?
-        puts "You should remove #{money_id}."
+        puts "remove #{money_id}."
         case InputHelper.confirm
         when 'n' then exit 0
         end
