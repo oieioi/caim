@@ -2,6 +2,8 @@
 
 caim is a terminal based [Zaim](https://zaim.net/) client.
 
+![caim-pay](/caim-pay.gif)
+
 ## Installation
 
 ### Dependencies
