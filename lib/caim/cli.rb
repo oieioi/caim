@@ -169,6 +169,8 @@ module Caim
 
       id = money.save
       puts "success! #{id}"
+    rescue Interrupt
+      puts "\nquit"
     end
   end
 end
