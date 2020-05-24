@@ -53,7 +53,7 @@ module Caim
       end
 
       def [] index
-        if index =~ /^[a-z]+$/
+        if index.to_s =~ /^[a-z]+$/
           index = var2num(index)
           @list[index]
         else
